@@ -1,10 +1,10 @@
 from flask import Flask
 
-from routes.products_routes import product
+import routes
 
 app = Flask(__name__)
 
-app.register_blueprint(product)
+app.register_blueprint(routes.product)
 
 
 if __name__ == '__main__':
