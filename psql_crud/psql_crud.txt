@@ -1,0 +1,183 @@
+// -------------------- Initial Database Creation:
+
+CREATE DATABASE markpsqlcrud;
+
+\c markpsqlcrud
+
+CREATE TABLE IF NOT EXISTS Companies (
+  company_id SERIAL PRIMARY KEY,
+  company_name VARCHAR UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Products (
+product_id SERIAL PRIMARY KEY,
+company_id SERIAL REFERENCES Companies (company_id) ON DELETE CASCADE,
+product_name VARCHAR UNIQUE NOT NULL,
+price INTEGER,
+description VARCHAR,
+active BOOLEAN DEFAULT true
+);
+
+CREATE TABLE IF NOT EXISTS Warranties (
+  warranty_id SERIAL PRIMARY KEY,
+  product_id SERIAL REFERENCES Products (product_id) ON DELETE CASCADE,
+  warranty_months VARCHAR NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Categories (
+  category_id SERIAL PRIMARY KEY,
+  category_name VARCHAR UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ProductsCategoriesXref (
+  product_id SERIAL REFERENCES Products (product_id) ON DELETE CASCADE,
+  category_id SERIAL REFERENCES Categories (category_id) ON DELETE CASCADE,
+  PRIMARY KEY(product_id, category_id)
+);
+
+// -------------------- CRUD operations
+
+// ---------- CREATE:
+// a single record in the companies TABLE (I'm doing a couple of these for later testing purposes)
+
+INSERT INTO Companies(company_name)
+VALUES ('Nintendo');
+
+INSERT INTO Companies(company_name)
+values ('NIKE');
+
+// a single record in the categories TABLE
+
+INSERT INTO Categories(category_name)
+VALUES ('Video Games');
+
+INSERT INTO Categories(category_name)
+VALUES ('Shoes');
+
+// a single record in the products table
+
+INSERT INTO Products(company_id, product_name, price, description)
+VALUES (1, 'Pikmin 4', 50, 'A pretty great strategy adventure game from Nintendo');
+
+INSERT INTO Products(company_id, product_name, price, description)
+VALUES (2, 'Nike Pegasus', 140, 'These are pretty expensive shoes, so they are probably good.');
+
+// a single record in the warranties table
+
+INSERT INTO Warranties(product_id, warranty_months)
+VALUES (1, '6 months');
+
+INSERT INTO Warranties(product_id, warranty_months)
+VALUES (2, '12 months');
+
+// extra: a single record in the ProductsCategoriesXref
+
+INSERT INTO ProductsCategoriesXref(product_id, category_id)
+VALUES (1, 1);
+
+INSERT INTO ProductsCategoriesXref(product_id, category_id)
+VALUES (2, 2);
+
+// ---------- READ:
+
+// all records in the companies table
+
+SELECT * FROM Companies;
+
+// all records in the categories table
+
+SELECT * FROM Categories;
+
+// all records in the products table
+
+SELECT * FROM Products;
+
+// all records in the warranties table
+
+SELECT * FROM Warranties;
+
+// all active products
+
+SELECT * FROM Products
+WHERE active = true;
+
+// all products with a particular company_id
+
+SELECT * FROM Products
+WHERE company_id = 1;
+
+// a single company record by id
+
+SELECT * FROM Companies
+WHERE company_id = 1;
+
+// a single category record by id (and all its associated products)
+
+SELECT c.category_id, c.category_name, p.product_name
+FROM Products p
+INNER JOIN ProductsCategoriesXref x ON (p.product_id = x.product_id)
+INNER JOIN Categories c ON (x.category_id = c.category_id)
+WHERE x.category_id = 1;
+
+// a single product record by id (and its single associated warranty and its associated categories)
+
+SELECT p.product_id, p.product_name, w.warranty_months, c.category_name
+FROM Categories c
+INNER JOIN ProductsCategoriesXref x ON (c.category_id = x.category_id)
+INNER JOIN Products p ON (x.product_id = p.product_id)
+INNER JOIN Warranties w ON (p.product_id = w.product_id)
+WHERE p.product_id = 1;
+
+// a single warranty record by id
+
+SELECT * FROM Warranties
+WHERE warranty_id = 1;
+
+// ---------- UPDATE:
+
+// one or more fields in a record from the companies table
+
+UPDATE Companies
+SET company_name = 'Nintendo Updated'
+WHERE company_id = 1;
+
+// one or more fields in a record from the categories table
+
+UPDATE Categories
+SET category_name = 'Video Games Updated'
+WHERE category_id = 1;
+
+// one or more fields in a record from the products table
+
+UPDATE Products
+SET product_name = 'Pikmin 4 Updated',
+description = 'This description sure has been updated!'
+WHERE product_id = 1;
+
+// one or more fields in a record from the warranties table
+
+UPDATE Warranties
+SET warranty_months = '6 months updated'
+WHERE warranty_id = 1;
+
+// ---------- DELETE:
+
+// delete a record in the products table based on their id (make sure all associated records in the warranty table and xref table are also deleted)
+
+DELETE FROM Products
+WHERE product_id = 1;
+
+// delete a record in the categories table based on their id (make sure all associated records in the xref table are also deleted)
+
+DELETE FROM Categories
+WHERE category_id = 1;
+
+// delete a record in the companies table based on their id (make sure all associated records in the products table, and the associated records in the xref table, are also deleted)
+
+DELETE FROM Companies
+WHERE company_id = 1;
+
+// delete a record in the warranties table based on their id (make sure the associated id in the products table is also deleted)
+
+DELETE FROM Warranties
+WHERE warranty_id = 2;
