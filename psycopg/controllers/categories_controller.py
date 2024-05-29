@@ -1,20 +1,58 @@
+import os
+
 from flask import jsonify
+import psycopg2
+
+database_name = os.environ.get('DATABASE_NAME')
+conn = psycopg2.connect(f"dbname={database_name}")
+cursor = conn.cursor()
 
 
-# def product_create(request):
-#     post_data = request.form if request.form else request.json
-#     product = {}
-#     product['product_id'] = post_data['product_id']
-#     product['product_name'] = post_data['product_name']
-#     product['description'] = post_data['description']
-#     product['price'] = post_data['price']
-#     product['active'] = bool(post_data['active'])
-#     product_records.append(product)
-#     return jsonify({"message": f"product {product['product_name']} has been added.", "results": product}), 200
+def category_create(request):
+    post_data = request.form if request.form else request.json
+    category_name = post_data['category_name']
+
+    if not category_name:
+        return jsonify({"message": "category_name is a Required Field"}), 400
+
+    result = cursor.execute("""
+        SELECT * FROM Categories
+        WHERE category_name=%s""",
+                            [category_name])
+    result = cursor.fetchone()
+    if result:
+        return jsonify({"message": 'Category already exists'}), 400
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO Categories
+            (category_name)
+            VALUES(%s);
+            """,
+            [category_name]
+        )
+        conn.commit()
+
+    except:
+        cursor.rollback()
+        return jsonify({"message": "Product could not be added"}), 404
+
+    return jsonify({"message": f"{category_name} has been added to the Categories table."}), 200
 
 
-# def products_get():
-#     return jsonify({"message": "products found", "results": product_records}), 200
+def categories_get():
+    cursor.execute(
+        """
+        SELECT *
+        FROM Categories;
+        """
+    )
+    result = cursor.fetchall()
+    if result:
+        return jsonify(({"message": "categorie(s) found", "result": result})), 200
+    else:
+        return jsonify(({"message": f"No categories found"})), 404
 
 
 # def products_get_active():

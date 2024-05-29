@@ -1,22 +1,62 @@
-from flask import jsonify
+import os
 
-from data import product_records
+from flask import jsonify
+import psycopg2
+
+database_name = os.environ.get('DATABASE_NAME')
+conn = psycopg2.connect(f"dbname={database_name}")
+cursor = conn.cursor()
 
 
 def product_create(request):
     post_data = request.form if request.form else request.json
     product = {}
-    product['product_id'] = post_data['product_id']
-    product['product_name'] = post_data['product_name']
-    product['description'] = post_data['description']
-    product['price'] = post_data['price']
-    product['active'] = bool(post_data['active'])
-    product_records.append(product)
-    return jsonify({"message": f"product {product['product_name']} has been added.", "results": product}), 200
+    company_id = post_data['company_id']
+    product_name = post_data['product_name']
+    price = post_data['price']
+    description = post_data['description']
+
+    if not product_name:
+        return jsonify({"message": "product_name is a Required Field"}), 400
+
+    result = cursor.execute("""
+        SELECT * FROM products
+        WHERE product_name=%s""",
+                            [product_name])
+    result = cursor.fetchone()
+    if result:
+        return jsonify({"message": 'Product already exists'}), 400
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO Products
+            (company_id, product_name, price, description)
+            VALUES(%s, %s, %s, %s);
+            """,
+            [company_id, product_name, price, description]
+        )
+        conn.commit()
+
+    except:
+        cursor.rollback()
+        return jsonify({"message": "Product could not be added"}), 404
+
+    return jsonify({"message": f"product {product_name} has been added.", "results": product}), 200
 
 
 def products_get():
-    return jsonify({"message": "products found", "results": product_records}), 200
+    cursor.execute(
+        """
+        SELECT *    
+        FROM Products
+        """
+    )
+    result = cursor.fetchall()
+    if result:
+        return jsonify(({"message": "product(s) found", "result": result})), 200
+    else:
+        return jsonify(({"message": f"No products found"})), 404
 
 
 def products_get_active():

@@ -6,11 +6,14 @@ import controllers
 category = Blueprint('category', __name__)
 
 
-# @product.route('/product', methods=['POST'])
-# def product_create():
-#     return controllers.product_create(request)
+@category.route('/category', methods=['POST'])
+def category_create():
+    return controllers.category_create(request)
 
 
+@category.route('/categories', methods=['GET'])
+def categories_get():
+    return controllers.categories_get()
 # @product.route('/products', methods=['GET'])
 # def products_get():
 #     return controllers.products_get()
