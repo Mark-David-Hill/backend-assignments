@@ -15,10 +15,10 @@ def category_create(request):
     if not category_name:
         return jsonify({"message": "category_name is a Required Field"}), 400
 
-    result = cursor.execute("""
+    cursor.execute("""
         SELECT * FROM Categories
         WHERE category_name=%s""",
-                            [category_name])
+                   [category_name])
     result = cursor.fetchone()
     if result:
         return jsonify({"message": 'Category already exists'}), 400
@@ -35,24 +35,26 @@ def category_create(request):
         conn.commit()
 
     except:
-        cursor.rollback()
         return jsonify({"message": "Product could not be added"}), 404
 
     return jsonify({"message": f"{category_name} has been added to the Categories table."}), 200
 
 
 def categories_get():
-    cursor.execute(
-        """
-        SELECT *
-        FROM Categories;
-        """
-    )
-    result = cursor.fetchall()
-    if result:
-        return jsonify(({"message": "categorie(s) found", "result": result})), 200
-    else:
-        return jsonify(({"message": f"No categories found"})), 404
+    try:
+        cursor.execute(
+            """
+            SELECT *
+            FROM Categories;
+            """
+        )
+        result = cursor.fetchall()
+        if result:
+            return jsonify(({"message": "categorie(s) found", "result": result})), 200
+        else:
+            return jsonify(({"message": f"No categories found"})), 404
+    except:
+        return jsonify({"message": "Product could not be added"}), 404
 
 
 # def products_get_active():

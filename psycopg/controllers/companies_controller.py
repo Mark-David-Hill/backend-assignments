@@ -1,5 +1,44 @@
-from flask import jsonify
+import os
 
+from flask import jsonify
+import psycopg2
+
+database_name = os.environ.get('DATABASE_NAME')
+conn = psycopg2.connect(f"dbname={database_name}")
+cursor = conn.cursor()
+
+
+def company_create(request):
+    post_data = request.form if request.form else request.json
+    company_name = post_data['company_name']
+
+    if not company_name:
+        return jsonify({"message": "company_name is a Required Field"}), 400
+
+    result = cursor.execute("""
+        SELECT * FROM Companies
+        WHERE company_name=%s""",
+                            [company_name])
+    result = cursor.fetchone()
+    if result:
+        return jsonify({"message": 'company already exists'}), 400
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO Companies
+            (company_name)
+            VALUES(%s);
+            """,
+            [company_name]
+        )
+        conn.commit()
+
+        return jsonify({"message": f"{company_name} has been added to the Companies table."}), 200
+
+    except:
+        cursor.rollback()
+        return jsonify({"message": "Company could not be added"}), 404
 
 # def product_create(request):
 #     post_data = request.form if request.form else request.json

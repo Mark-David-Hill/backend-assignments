@@ -10,7 +10,6 @@ cursor = conn.cursor()
 
 def product_create(request):
     post_data = request.form if request.form else request.json
-    product = {}
     company_id = post_data['company_id']
     product_name = post_data['product_name']
     price = post_data['price']
@@ -19,10 +18,10 @@ def product_create(request):
     if not product_name:
         return jsonify({"message": "product_name is a Required Field"}), 400
 
-    result = cursor.execute("""
-        SELECT * FROM products
+    cursor.execute("""
+        SELECT * FROM Products
         WHERE product_name=%s""",
-                            [product_name])
+                   [product_name])
     result = cursor.fetchone()
     if result:
         return jsonify({"message": 'Product already exists'}), 400
@@ -39,10 +38,9 @@ def product_create(request):
         conn.commit()
 
     except:
-        cursor.rollback()
         return jsonify({"message": "Product could not be added"}), 404
 
-    return jsonify({"message": f"product {product_name} has been added.", "results": product}), 200
+    return jsonify({"message": f"{product_name} has been added to the Products table."}), 200
 
 
 def products_get():

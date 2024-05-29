@@ -6,9 +6,9 @@ import controllers
 company = Blueprint('company', __name__)
 
 
-# @product.route('/product', methods=['POST'])
-# def product_create():
-#     return controllers.product_create(request)
+@company.route('/company', methods=['POST'])
+def company_create():
+    return controllers.company_create(request)
 
 
 # @product.route('/products', methods=['GET'])

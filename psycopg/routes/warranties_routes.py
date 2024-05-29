@@ -6,9 +6,9 @@ import controllers
 warranty = Blueprint('warranty', __name__)
 
 
-# @product.route('/product', methods=['POST'])
-# def product_create():
-#     return controllers.product_create(request)
+@warranty.route('/warranty', methods=['POST'])
+def warranty_create():
+    return controllers.warranty_create(request)
 
 
 # @product.route('/products', methods=['GET'])
