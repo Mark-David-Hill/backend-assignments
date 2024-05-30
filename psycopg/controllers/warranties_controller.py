@@ -29,6 +29,22 @@ def warranty_create(request):
     except:
         return jsonify({"message": "Warranty could not be added"}), 404
 
+
+def warranties_get():
+    try:
+        cursor.execute(
+            """
+            SELECT *
+            FROM Warranties;
+            """
+        )
+        result = cursor.fetchall()
+        if result:
+            return jsonify(({"message": "warranties found", "result": result})), 200
+        else:
+            return jsonify(({"message": f"No warranties found"})), 404
+    except:
+        return jsonify({"message": "Could not fetch warranties data"}), 404
     # def products_get():
     #     return jsonify({"message": "products found", "results": product_records}), 200
 

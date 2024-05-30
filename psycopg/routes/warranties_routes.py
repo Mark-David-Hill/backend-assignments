@@ -11,9 +11,9 @@ def warranty_create():
     return controllers.warranty_create(request)
 
 
-# @product.route('/products', methods=['GET'])
-# def products_get():
-#     return controllers.products_get()
+@warranty.route('/warranties', methods=['GET'])
+def warranties_get():
+    return controllers.warranties_get()
 
 
 # @product.route('/products/active', methods=['GET'])

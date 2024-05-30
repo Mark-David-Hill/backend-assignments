@@ -44,17 +44,20 @@ def product_create(request):
 
 
 def products_get():
-    cursor.execute(
-        """
-        SELECT *    
-        FROM Products
-        """
-    )
-    result = cursor.fetchall()
-    if result:
-        return jsonify(({"message": "product(s) found", "result": result})), 200
-    else:
-        return jsonify(({"message": f"No products found"})), 404
+    try:
+        cursor.execute(
+            """
+            SELECT *    
+            FROM Products
+            """
+        )
+        result = cursor.fetchall()
+        if result:
+            return jsonify(({"message": "product(s) found", "result": result})), 200
+        else:
+            return jsonify(({"message": f"No products found"})), 404
+    except:
+        return jsonify({"message": "Could not fetch products data"}), 404
 
 
 def products_get_active():

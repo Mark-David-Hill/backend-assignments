@@ -11,9 +11,9 @@ def company_create():
     return controllers.company_create(request)
 
 
-# @product.route('/products', methods=['GET'])
-# def products_get():
-#     return controllers.products_get()
+@company.route('/companies', methods=['GET'])
+def companies_get():
+    return controllers.companies_get()
 
 
 # @product.route('/products/active', methods=['GET'])

@@ -40,16 +40,22 @@ def company_create(request):
         cursor.rollback()
         return jsonify({"message": "Company could not be added"}), 404
 
-# def product_create(request):
-#     post_data = request.form if request.form else request.json
-#     product = {}
-#     product['product_id'] = post_data['product_id']
-#     product['product_name'] = post_data['product_name']
-#     product['description'] = post_data['description']
-#     product['price'] = post_data['price']
-#     product['active'] = bool(post_data['active'])
-#     product_records.append(product)
-#     return jsonify({"message": f"product {product['product_name']} has been added.", "results": product}), 200
+
+def companies_get():
+    try:
+        cursor.execute(
+            """
+            SELECT *
+            FROM Companies;
+            """
+        )
+        result = cursor.fetchall()
+        if result:
+            return jsonify(({"message": "companies found", "result": result})), 200
+        else:
+            return jsonify(({"message": f"No companies found"})), 404
+    except:
+        return jsonify({"message": "Could not fetch companies data"}), 404
 
 
 # def products_get():

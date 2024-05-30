@@ -50,11 +50,11 @@ def categories_get():
         )
         result = cursor.fetchall()
         if result:
-            return jsonify(({"message": "categorie(s) found", "result": result})), 200
+            return jsonify(({"message": "categories found", "result": result})), 200
         else:
             return jsonify(({"message": f"No categories found"})), 404
     except:
-        return jsonify({"message": "Product could not be added"}), 404
+        return jsonify({"message": "Could not fetch categories data"}), 404
 
 
 # def products_get_active():
