@@ -8,6 +8,13 @@ conn = psycopg2.connect(f"dbname={database_name}")
 cursor = conn.cursor()
 
 
+def find_dict_index(list, key, value):
+    for index, dictionary in enumerate(list):
+        if dictionary.get(key) == value:
+            return index
+    return -1
+
+
 def product_create(request):
     post_data = request.form if request.form else request.json
     company_id = post_data['company_id']
@@ -44,19 +51,44 @@ def product_create(request):
 
 
 def products_get():
+
     try:
         cursor.execute(
             """
-            SELECT c.category_id, c.category_name, w.warranty_id, w.warranty_months, p.product_name, p.price, p.description
+            SELECT p.product_id, p.product_name, p.price, p.description, c.category_name, w.warranty_months
             FROM Products p
             INNER JOIN ProductsCategoriesXref x ON (p.product_id = x.product_id)
             INNER JOIN Categories c ON (x.category_id = c.category_id)
             INNER JOIN Warranties w ON (p.product_id = w.product_id)
             """
         )
-        result = cursor.fetchall()
-        if result:
-            return jsonify(({"message": "products found", "result": result})), 200
+        results = cursor.fetchall()
+
+        if results:
+            product_list = []
+
+            for product in results:
+                dict_id = find_dict_index(product_list, 'product_id', product[0])
+
+                if dict_id != -1:
+                    current_category_name = product_list[dict_id]['category_name']
+                    new_category_name = product[4]
+
+                    product_list[dict_id]['category_name'] = current_category_name + ", " + new_category_name
+
+                else:
+                    product_record = {
+                        'product_id': product[0],
+                        'product_name': product[1],
+                        'price': product[2],
+                        'description': product[3],
+                        'category_name': product[4],
+                        'warranty_months': product[5]
+                    }
+
+                    product_list.append(product_record)
+
+            return jsonify(({"message": "products found", "results": product_list})), 200
         else:
             return jsonify(({"message": f"No products found"})), 404
     except:
@@ -67,14 +99,41 @@ def products_get_active():
     try:
         cursor.execute(
             """
-            SELECT *    
-            FROM Products
-            WHERE active=%s
-            """, [True]
+            SELECT p.product_id, p.product_name, p.price, p.description, c.category_name, w.warranty_months
+            FROM Products p
+            INNER JOIN ProductsCategoriesXref x ON (p.product_id = x.product_id)
+            INNER JOIN Categories c ON (x.category_id = c.category_id)
+            INNER JOIN Warranties w ON (p.product_id = w.product_id)
+            WHERE p.active=True
+            """,
         )
-        result = cursor.fetchall()
-        if result:
-            return jsonify(({"message": "active products found", "result": result})), 200
+        results = cursor.fetchall()
+
+        if results:
+            product_list = []
+
+            for product in results:
+                dict_id = find_dict_index(product_list, 'product_id', product[0])
+
+                if dict_id != -1:
+                    current_category_name = product_list[dict_id]['category_name']
+                    new_category_name = product[4]
+
+                    product_list[dict_id]['category_name'] = current_category_name + ", " + new_category_name
+
+                else:
+                    product_record = {
+                        'product_id': product[0],
+                        'product_name': product[1],
+                        'price': product[2],
+                        'description': product[3],
+                        'category_name': product[4],
+                        'warranty_months': product[5]
+                    }
+
+                    product_list.append(product_record)
+
+            return jsonify(({"message": "active products found", "results": product_list})), 200
         else:
             return jsonify(({"message": f"No active products found"})), 404
     except:
@@ -85,18 +144,43 @@ def product_get_by_id(product_id):
     try:
         cursor.execute(
             """
-            SELECT c.category_id, c.category_name, p.product_name, p.price, p.description
+            SELECT p.product_id, p.product_name, p.price, p.description, c.category_name, w.warranty_months
             FROM Products p
             INNER JOIN ProductsCategoriesXref x ON (p.product_id = x.product_id)
             INNER JOIN Categories c ON (x.category_id = c.category_id)
-            WHERE p.product_id=%s;
+            INNER JOIN Warranties w ON (p.product_id = w.product_id)
+            WHERE p.product_id=%s
             """, [product_id]
         )
-        result = cursor.fetchall()
-        if result:
-            return jsonify(({"message": f"product with id {product_id} found", "result": result})), 200
+        results = cursor.fetchall()
+
+        if results:
+            product_list = []
+
+            for product in results:
+                dict_id = find_dict_index(product_list, 'product_id', product[0])
+
+                if dict_id != -1:
+                    current_category_name = product_list[dict_id]['category_name']
+                    new_category_name = product[4]
+
+                    product_list[dict_id]['category_name'] = current_category_name + ", " + new_category_name
+
+                else:
+                    product_record = {
+                        'product_id': product[0],
+                        'product_name': product[1],
+                        'price': product[2],
+                        'description': product[3],
+                        'category_name': product[4],
+                        'warranty_months': product[5]
+                    }
+
+                    product_list.append(product_record)
+
+            return jsonify(({"message": "product found", "results": product_list})), 200
         else:
-            return jsonify(({"message": "No product found"})), 404
+            return jsonify(({f"message": f"No product found with id {product_id}"})), 404
     except:
         return jsonify({"message": "Could not fetch product data"}), 404
 

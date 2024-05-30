@@ -13,7 +13,7 @@ def company_create():
 
 @company.route('/companies', methods=['GET'])
 def companies_get():
-    return controllers.companys_get()
+    return controllers.companies_get()
 
 
 @company.route('/company/<company_id>', methods=['GET'])
