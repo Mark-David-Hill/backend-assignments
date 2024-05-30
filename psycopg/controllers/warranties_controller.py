@@ -45,24 +45,24 @@ def warranties_get():
             return jsonify(({"message": f"No warranties found"})), 404
     except:
         return jsonify({"message": "Could not fetch warranties data"}), 404
-    # def products_get():
-    #     return jsonify({"message": "products found", "results": product_records}), 200
 
-    # def products_get_active():
-    #     active_products = []
-    #     for product in product_records:
-    #         if product['active'] == True:
-    #             active_products.append(product)
-    #     if active_products:
-    #         return jsonify({"message": "active products found", "results": active_products}), 200
-    #     else:
-    #         return jsonify("message: no active Products were found."), 404
 
-    # def product_get_by_id(product_id):
-    #     for product in product_records:
-    #         if product['product_id'] == int(product_id):
-    #             return jsonify({"message": "products found", "results": product}), 200
-    #     return jsonify({"message": f'product with id {product_id} not found.'}), 404
+def warranty_get_by_id(warranty_id):
+    try:
+        cursor.execute(
+            """
+            SELECT *
+            FROM Warranties
+            WHERE warranty_id=%s;
+            """, [warranty_id]
+        )
+        result = cursor.fetchone()
+        if result:
+            return jsonify(({"message": f"warranty with id {warranty_id} found", "result": result})), 200
+        else:
+            return jsonify(({"message": "No warranty found"})), 404
+    except:
+        return jsonify({"message": "Could not fetch warranty data"}), 404
 
     # def product_update_by_id(request, product_id):
     #     data = request.form if request.form else request.json

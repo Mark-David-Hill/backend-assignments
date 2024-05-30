@@ -47,13 +47,16 @@ def products_get():
     try:
         cursor.execute(
             """
-            SELECT *    
-            FROM Products
+            SELECT c.category_id, c.category_name, w.warranty_id, w.warranty_months, p.product_name, p.price, p.description
+            FROM Products p
+            INNER JOIN ProductsCategoriesXref x ON (p.product_id = x.product_id)
+            INNER JOIN Categories c ON (x.category_id = c.category_id)
+            INNER JOIN Warranties w ON (p.product_id = w.product_id)
             """
         )
         result = cursor.fetchall()
         if result:
-            return jsonify(({"message": "product(s) found", "result": result})), 200
+            return jsonify(({"message": "products found", "result": result})), 200
         else:
             return jsonify(({"message": f"No products found"})), 404
     except:
@@ -61,21 +64,41 @@ def products_get():
 
 
 def products_get_active():
-    active_products = []
-    for product in product_records:
-        if product['active'] == True:
-            active_products.append(product)
-    if active_products:
-        return jsonify({"message": "active products found", "results": active_products}), 200
-    else:
-        return jsonify("message: no active Products were found."), 404
+    try:
+        cursor.execute(
+            """
+            SELECT *    
+            FROM Products
+            WHERE active=%s
+            """, [True]
+        )
+        result = cursor.fetchall()
+        if result:
+            return jsonify(({"message": "active products found", "result": result})), 200
+        else:
+            return jsonify(({"message": f"No active products found"})), 404
+    except:
+        return jsonify({"message": "Could not fetch products data"}), 404
 
 
 def product_get_by_id(product_id):
-    for product in product_records:
-        if product['product_id'] == int(product_id):
-            return jsonify({"message": "products found", "results": product}), 200
-    return jsonify({"message": f'product with id {product_id} not found.'}), 404
+    try:
+        cursor.execute(
+            """
+            SELECT c.category_id, c.category_name, p.product_name, p.price, p.description
+            FROM Products p
+            INNER JOIN ProductsCategoriesXref x ON (p.product_id = x.product_id)
+            INNER JOIN Categories c ON (x.category_id = c.category_id)
+            WHERE p.product_id=%s;
+            """, [product_id]
+        )
+        result = cursor.fetchall()
+        if result:
+            return jsonify(({"message": f"product with id {product_id} found", "result": result})), 200
+        else:
+            return jsonify(({"message": "No product found"})), 404
+    except:
+        return jsonify({"message": "Could not fetch product data"}), 404
 
 
 def product_update_by_id(request, product_id):

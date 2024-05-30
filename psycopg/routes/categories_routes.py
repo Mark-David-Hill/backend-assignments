@@ -14,19 +14,11 @@ def category_create():
 @category.route('/categories', methods=['GET'])
 def categories_get():
     return controllers.categories_get()
-# @product.route('/products', methods=['GET'])
-# def products_get():
-#     return controllers.products_get()
 
 
-# @product.route('/products/active', methods=['GET'])
-# def products_get_active():
-#     return controllers.products_get_active()
-
-
-# @product.route('/product/<product_id>', methods=['GET'])
-# def product_get_by_id(product_id):
-#     return controllers.product_get_by_id(product_id)
+@category.route('/category/<category_id>', methods=['GET'])
+def category_get_by_id(category_id):
+    return controllers.category_get_by_id(category_id)
 
 
 # @product.route('/product/<product_id>', methods=['PUT'])

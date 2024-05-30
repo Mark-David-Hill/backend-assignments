@@ -13,17 +13,12 @@ def company_create():
 
 @company.route('/companies', methods=['GET'])
 def companies_get():
-    return controllers.companies_get()
+    return controllers.companys_get()
 
 
-# @product.route('/products/active', methods=['GET'])
-# def products_get_active():
-#     return controllers.products_get_active()
-
-
-# @product.route('/product/<product_id>', methods=['GET'])
-# def product_get_by_id(product_id):
-#     return controllers.product_get_by_id(product_id)
+@company.route('/company/<company_id>', methods=['GET'])
+def company_get_by_id(company_id):
+    return controllers.company_get_by_id(company_id)
 
 
 # @product.route('/product/<product_id>', methods=['PUT'])

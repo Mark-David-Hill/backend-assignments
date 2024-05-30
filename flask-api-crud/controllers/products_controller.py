@@ -3,7 +3,7 @@ from flask import jsonify
 from data import product_records
 
 
-def product_create(request):
+def product_create():
     post_data = request.form if request.form else request.json
     product = {}
     product['product_id'] = post_data['product_id']
