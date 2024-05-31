@@ -66,7 +66,8 @@ def product_create(request):
         print("before append")
         product_list.append(product_record)
 
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({"message": "Product could not be added"}), 404
 
     return jsonify({"message": f"{product_name} has been added to the Products table.", "result": product_list}), 200
@@ -114,7 +115,8 @@ def products_get():
             return jsonify(({"message": "products found", "results": product_list})), 200
         else:
             return jsonify(({"message": f"No products found"})), 404
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({"message": "Could not fetch products data"}), 404
 
 
@@ -159,7 +161,8 @@ def products_get_active():
             return jsonify(({"message": "active products found", "results": product_list})), 200
         else:
             return jsonify(({"message": f"No active products found"})), 404
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({"message": "Could not fetch products data"}), 404
 
 
@@ -204,7 +207,8 @@ def product_get_by_id(product_id):
             return jsonify(({"message": "product found", "results": product_list})), 200
         else:
             return jsonify(({f"message": f"No product found with id {product_id}"})), 404
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({"message": "Could not fetch product data"}), 404
 
 
@@ -221,30 +225,50 @@ def product_update_by_id(request, product_id):
         cursor.execute("""
             UPDATE Products
             SET product_name=%s,
-                       price=%s,
-                       description=%s
+            price=%s,
+            description=%s
             WHERE product_id=%s""",
                        [product_name, price, description, product_id])
         conn.commit()
 
-    except:
-        return jsonify({"message": "Product could not be updated"}), 404
+        cursor.execute(
+            """
+            SELECT *
+            FROM Products
+            WHERE product_id=%s;
+            """, [product_id]
+        )
+        result = cursor.fetchone()
 
-    return jsonify({"message": f"{product_name} has been updated."}), 200
+        if result:
+            product_list = []
+
+            product_record = {
+                'product_id': result[0],
+                'company_id': result[1],
+                'product_name': result[2],
+                'price': result[3],
+                'description': result[4],
+                'active': result[5],
+            }
+
+            product_list.append(product_record)
+            return jsonify(({"message": f"{product_name} has been updated", "result": product_list})), 200
+        else:
+            return jsonify(({"message": "No product found"})), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "Product could not be updated"}), 404
 
 
 def product_update_active_status(request, product_id):
     post_data = request.form if request.form else request.json
     if post_data['active'] is not True and post_data['active'] is not False:
         return jsonify({"message": "active requires a true or false boolean value"}), 400
-    print('post_data.active: ', post_data['active'])
     active = True if post_data['active'] else False
-    print('active: ', active)
 
     try:
-        print("before query")
-        print("active: ", active)
-        print("product id: ", product_id)
         cursor.execute("""
             UPDATE Products
             SET active=%s
@@ -252,11 +276,35 @@ def product_update_active_status(request, product_id):
                        (active, product_id))
         conn.commit()
 
+        cursor.execute(
+            """
+            SELECT *
+            FROM Products
+            WHERE product_id=%s;
+            """, [product_id]
+        )
+        result = cursor.fetchone()
+
+        if result:
+            product_list = []
+
+            product_record = {
+                'product_id': result[0],
+                'company_id': result[1],
+                'product_name': result[2],
+                'price': result[3],
+                'description': result[4],
+                'active': result[5],
+            }
+
+            product_list.append(product_record)
+            return jsonify({"message": f"Product with id {product_id}'s active status has been updated.", "result": product_list}), 200
+        else:
+            return jsonify(({"message": "No product found"})), 404
+
     except Exception as e:
         print(e)
         return jsonify({"message": "Product's active status could not be updated"}), 404
-
-    return jsonify({"message": f"Product ID {product_id}'s active status has been updated."}), 200
 
 
 def product_delete(product_id):
@@ -267,13 +315,26 @@ def product_delete(product_id):
         return jsonify({"message": 'product_id is required'}), 400
 
     try:
-        cursor.execute("""
-            DELETE FROM Products
-            WHERE product_id=%s
-            """, [product_id])
-        conn.commit()
+        cursor.execute(
+            """
+            SELECT *
+            FROM Products
+            WHERE product_id=%s;
+            """, [product_id]
+        )
+        result = cursor.fetchone()
 
-    except:
-        return jsonify({"message": "Product could not be deleted"}), 404
+        if result:
+            cursor.execute("""
+                DELETE FROM Products
+                WHERE product_id=%s
+                """, [product_id])
+            conn.commit()
 
-    return jsonify({"message": f"product with id {product_id} has been deleted."}), 200
+            return jsonify({"message": f"product with id {product_id} has been deleted."}), 200
+        else:
+            return jsonify({"message": f"no product exists with id {product_id}"}), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "product could not be deleted"}), 404
