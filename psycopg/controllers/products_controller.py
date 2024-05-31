@@ -77,7 +77,7 @@ def products_get():
     try:
         cursor.execute(
             """
-            SELECT p.product_id, p.product_name, p.price, p.description, c.category_name, w.warranty_months
+            SELECT p.product_id, p.product_name, p.price, p.active, p.description, c.category_name, w.warranty_months
             FROM Products p
             INNER JOIN ProductsCategoriesXref x ON (p.product_id = x.product_id)
             INNER JOIN Categories c ON (x.category_id = c.category_id)
@@ -94,7 +94,7 @@ def products_get():
 
                 if dict_id != -1:
                     current_category_name = product_list[dict_id]['category_name']
-                    new_category_name = product[4]
+                    new_category_name = product[5]
 
                     product_list[dict_id]['category_name'] = current_category_name + ", " + new_category_name
 
@@ -103,9 +103,10 @@ def products_get():
                         'product_id': product[0],
                         'product_name': product[1],
                         'price': product[2],
-                        'description': product[3],
-                        'category_name': product[4],
-                        'warranty_months': product[5]
+                        'active': product[3],
+                        'description': product[4],
+                        'category_name': product[5],
+                        'warranty_months': product[6]
                     }
 
                     product_list.append(product_record)
@@ -227,28 +228,33 @@ def product_update_by_id(request, product_id):
         conn.commit()
 
     except:
-        return jsonify({"message": "Product has been updated"}), 404
+        return jsonify({"message": "Product could not be updated"}), 404
 
     return jsonify({"message": f"{product_name} has been updated."}), 200
 
 
 def product_update_active_status(request, product_id):
     post_data = request.form if request.form else request.json
-    active = post_data['active']
-
-    if not active:
-        return jsonify({"message": "active is a Required Field"}), 400
+    if post_data['active'] is not True and post_data['active'] is not False:
+        return jsonify({"message": "active requires a true or false boolean value"}), 400
+    print('post_data.active: ', post_data['active'])
+    active = True if post_data['active'] else False
+    print('active: ', active)
 
     try:
+        print("before query")
+        print("active: ", active)
+        print("product id: ", product_id)
         cursor.execute("""
             UPDATE Products
             SET active=%s
-            WHERE product_id=%s"""
-                       [active, product_id])
+            WHERE product_id=%s""",
+                       (active, product_id))
         conn.commit()
 
-    except:
-        return jsonify({"message": "Product has been updated"}), 404
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "Product's active status could not be updated"}), 404
 
     return jsonify({"message": f"Product ID {product_id}'s active status has been updated."}), 200
 
