@@ -69,6 +69,7 @@ def companies_get():
             """
         )
         results = cursor.fetchall()
+
         if results:
             company_list = []
 
@@ -163,7 +164,6 @@ def company_delete(company_id):
     company = {}
     company['company_id'] = int(company_id)
 
-    print('company: ', company)
     if not company['company_id']:
         return jsonify({"message": 'company_id is required'}), 400
 
