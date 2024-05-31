@@ -76,6 +76,27 @@ def company_get_by_id(company_id):
         return jsonify({"message": "Could not fetch company data"}), 404
 
 
+def company_update_by_id(request, company_id):
+    post_data = request.form if request.form else request.json
+    company_name = post_data['company_name']
+
+    if not company_name:
+        return jsonify({"message": "company_name is a Required Field"}), 400
+
+    try:
+        cursor.execute("""
+            UPDATE Companies
+            SET company_name=%s
+            WHERE company_id=%s""",
+                       [company_name, company_id])
+        conn.commit()
+
+    except:
+        return jsonify({"message": "Product has been updated"}), 404
+
+    return jsonify({"message": f"{company_name} has been updated."}), 200
+
+
 # def product_update_by_id(request, product_id):
 #     data = request.form if request.form else request.json
 #     product = {}

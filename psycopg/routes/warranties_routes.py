@@ -21,9 +21,9 @@ def warranty_get_by_id(warranty_id):
     return controllers.warranty_get_by_id(warranty_id)
 
 
-# @product.route('/product/<product_id>', methods=['PUT'])
-# def product_update_by_id(product_id):
-#     return controllers.product_update_by_id(request, product_id)
+@warranty.route('/warranty/<warranty_id>', methods=['PUT'])
+def warranty_update_by_id(warranty_id):
+    return controllers.warranty_update_by_id(request, warranty_id)
 
 
 # @product.route('/product/activity/<product_id>', methods=['PATCH'])

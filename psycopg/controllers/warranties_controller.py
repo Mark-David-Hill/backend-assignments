@@ -64,51 +64,23 @@ def warranty_get_by_id(warranty_id):
     except:
         return jsonify({"message": "Could not fetch warranty data"}), 404
 
-    # def product_update_by_id(request, product_id):
-    #     data = request.form if request.form else request.json
-    #     product = {}
-    #     product['product_id'] = int(product_id)
 
-    #     if not product['product_id']:
-    #         return jsonify({"message": 'product_id is required'}), 400
+def warranty_update_by_id(request, warranty_id):
+    post_data = request.form if request.form else request.json
+    warranty_months = post_data['warranty_months']
 
-    #     for record in product_records:
-    #         if record['product_id'] == product['product_id']:
-    #             product = record
+    if not warranty_months:
+        return jsonify({"message": "warranty_months is a Required Field"}), 400
 
-    #     product['product_name'] = data.get('product_name', product['product_name'])
-    #     product['description'] = data.get('description', product['description'])
-    #     product['price'] = data.get('price', product['price'])
-    #     product['active'] = data.get('active', product['active'])
+    try:
+        cursor.execute("""
+            UPDATE Warranties
+            SET warranty_months=%s
+            WHERE warranty_id=%s""",
+                       [warranty_months, warranty_id])
+        conn.commit()
 
-    #     return jsonify({"message": f"product {product['product_name']} has been updated", "results": product}), 200
+    except:
+        return jsonify({"message": "Product has been updated"}), 404
 
-    # def product_update_active_status(product_id):
-    #     product = {}
-    #     product['product_id'] = int(product_id)
-
-    #     if not product['product_id']:
-    #         return jsonify({"message": 'product_id is required'}), 400
-
-    #     for record in product_records:
-    #         if record['product_id'] == product['product_id']:
-    #             product = record
-
-    #     product['active'] = not product['active']
-
-    #     return jsonify({"message": f"product {product['product_name']}'s active status has been set to {product['active']}", "results": product}), 200
-
-    # def product_delete(product_id):
-    #     product = {}
-    #     product['product_id'] = int(product_id)
-
-    #     if not product['product_id']:
-    #         return jsonify({"message": 'product_id is required'}), 400
-
-    #     for record in product_records:
-    #         if record['product_id'] == product['product_id']:
-    #             product = record
-
-    #     product_records.remove(product)
-
-    #     return jsonify({"message": f"product {product['product_name']} has been deleted."}), 200
+    return jsonify({"message": f"{warranty_months} has been updated."}), 200

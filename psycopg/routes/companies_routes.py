@@ -21,9 +21,9 @@ def company_get_by_id(company_id):
     return controllers.company_get_by_id(company_id)
 
 
-# @product.route('/product/<product_id>', methods=['PUT'])
-# def product_update_by_id(product_id):
-#     return controllers.product_update_by_id(request, product_id)
+@company.route('/company/<company_id>', methods=['PUT'])
+def company_update_by_id(company_id):
+    return controllers.company_update_by_id(request, company_id)
 
 
 # @product.route('/product/activity/<product_id>', methods=['PATCH'])

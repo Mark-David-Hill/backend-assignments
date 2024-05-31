@@ -44,10 +44,32 @@ def product_create(request):
         )
         conn.commit()
 
+        cursor.execute(
+            """
+            SELECT COUNT(*) 
+            FROM Products
+            """
+        )
+        print('after execute')
+        product_id = cursor.fetchone()[0]
+        print("product id:", product_id)
+        print("result:", result)
+
+        product_list = []
+        product_record = {
+            'product_id': product_id,
+            'company_id': company_id,
+            'product_name': product_name,
+            'price': price,
+            'description': description
+        }
+        print("before append")
+        product_list.append(product_record)
+
     except:
         return jsonify({"message": "Product could not be added"}), 404
 
-    return jsonify({"message": f"{product_name} has been added to the Products table."}), 200
+    return jsonify({"message": f"{product_name} has been added to the Products table.", "result": product_list}), 200
 
 
 def products_get():
@@ -186,39 +208,49 @@ def product_get_by_id(product_id):
 
 
 def product_update_by_id(request, product_id):
-    data = request.form if request.form else request.json
-    product = {}
-    product['product_id'] = int(product_id)
+    post_data = request.form if request.form else request.json
+    product_name = post_data['product_name']
+    price = post_data['price']
+    description = post_data['description']
 
-    if not product['product_id']:
-        return jsonify({"message": 'product_id is required'}), 400
+    if not product_name:
+        return jsonify({"message": "product_name is a Required Field"}), 400
 
-    for record in product_records:
-        if record['product_id'] == product['product_id']:
-            product = record
+    try:
+        cursor.execute("""
+            UPDATE Products
+            SET product_name=%s,
+                       price=%s,
+                       description=%s
+            WHERE product_id=%s""",
+                       [product_name, price, description, product_id])
+        conn.commit()
 
-    product['product_name'] = data.get('product_name', product['product_name'])
-    product['description'] = data.get('description', product['description'])
-    product['price'] = data.get('price', product['price'])
-    product['active'] = data.get('active', product['active'])
+    except:
+        return jsonify({"message": "Product has been updated"}), 404
 
-    return jsonify({"message": f"product {product['product_name']} has been updated", "results": product}), 200
+    return jsonify({"message": f"{product_name} has been updated."}), 200
 
 
-def product_update_active_status(product_id):
-    product = {}
-    product['product_id'] = int(product_id)
+def product_update_active_status(request, product_id):
+    post_data = request.form if request.form else request.json
+    active = post_data['active']
 
-    if not product['product_id']:
-        return jsonify({"message": 'product_id is required'}), 400
+    if not active:
+        return jsonify({"message": "active is a Required Field"}), 400
 
-    for record in product_records:
-        if record['product_id'] == product['product_id']:
-            product = record
+    try:
+        cursor.execute("""
+            UPDATE Products
+            SET active=%s
+            WHERE product_id=%s"""
+                       [active, product_id])
+        conn.commit()
 
-    product['active'] = not product['active']
+    except:
+        return jsonify({"message": "Product has been updated"}), 404
 
-    return jsonify({"message": f"product {product['product_name']}'s active status has been set to {product['active']}", "results": product}), 200
+    return jsonify({"message": f"Product ID {product_id}'s active status has been updated."}), 200
 
 
 def product_delete(product_id):

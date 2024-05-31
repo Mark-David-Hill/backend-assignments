@@ -75,24 +75,25 @@ def category_get_by_id(category_id):
         return jsonify({"message": "Could not fetch category data"}), 404
 
 
-# def product_update_by_id(request, product_id):
-#     data = request.form if request.form else request.json
-#     product = {}
-#     product['product_id'] = int(product_id)
+def category_update_by_id(request, category_id):
+    post_data = request.form if request.form else request.json
+    category_name = post_data['category_name']
 
-#     if not product['product_id']:
-#         return jsonify({"message": 'product_id is required'}), 400
+    if not category_name:
+        return jsonify({"message": "category_name is a Required Field"}), 400
 
-#     for record in product_records:
-#         if record['product_id'] == product['product_id']:
-#             product = record
+    try:
+        cursor.execute("""
+            UPDATE Categories
+            SET category_name=%s
+            WHERE category_id=%s""",
+                       [category_name, category_id])
+        conn.commit()
 
-#     product['product_name'] = data.get('product_name', product['product_name'])
-#     product['description'] = data.get('description', product['description'])
-#     product['price'] = data.get('price', product['price'])
-#     product['active'] = data.get('active', product['active'])
+    except:
+        return jsonify({"message": "Product has been updated"}), 404
 
-#     return jsonify({"message": f"product {product['product_name']} has been updated", "results": product}), 200
+    return jsonify({"message": f"{category_name} has been updated."}), 200
 
 
 # def product_update_active_status(product_id):
