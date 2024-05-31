@@ -26,11 +26,6 @@ def warranty_update_by_id(warranty_id):
     return controllers.warranty_update_by_id(request, warranty_id)
 
 
-# @product.route('/product/activity/<product_id>', methods=['PATCH'])
-# def product_update_active_status(product_id):
-#     return controllers.product_update_active_status(product_id)
-
-
-# @product.route('/product/delete/<product_id>', methods=['DELETE'])
-# def product_delete(product_id):
-#     return controllers.product_delete(product_id)
+@warranty.route('/warranty/delete/<warranty_id>', methods=['DELETE'])
+def warranty_delete(warranty_id):
+    return controllers.warranty_delete(warranty_id)

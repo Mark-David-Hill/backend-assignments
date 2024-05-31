@@ -26,11 +26,6 @@ def company_update_by_id(company_id):
     return controllers.company_update_by_id(request, company_id)
 
 
-# @product.route('/product/activity/<product_id>', methods=['PATCH'])
-# def product_update_active_status(product_id):
-#     return controllers.product_update_active_status(product_id)
-
-
-# @product.route('/product/delete/<product_id>', methods=['DELETE'])
-# def product_delete(product_id):
-#     return controllers.product_delete(product_id)
+@company.route('/company/delete/<company_id>', methods=['DELETE'])
+def company_delete(company_id):
+    return controllers.company_delete(company_id)

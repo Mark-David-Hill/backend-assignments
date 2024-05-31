@@ -96,33 +96,21 @@ def category_update_by_id(request, category_id):
     return jsonify({"message": f"{category_name} has been updated."}), 200
 
 
-# def product_update_active_status(product_id):
-#     product = {}
-#     product['product_id'] = int(product_id)
+def category_delete(category_id):
+    category = {}
+    category['category_id'] = int(category_id)
 
-#     if not product['product_id']:
-#         return jsonify({"message": 'product_id is required'}), 400
+    if not category['category_id']:
+        return jsonify({"message": 'category_id is required'}), 400
 
-#     for record in product_records:
-#         if record['product_id'] == product['product_id']:
-#             product = record
+    try:
+        cursor.execute("""
+            DELETE FROM Categories
+            WHERE category_id=%s
+            """, [category_id])
+        conn.commit()
 
-#     product['active'] = not product['active']
+    except:
+        return jsonify({"message": "category could not be deleted"}), 404
 
-#     return jsonify({"message": f"product {product['product_name']}'s active status has been set to {product['active']}", "results": product}), 200
-
-
-# def product_delete(product_id):
-#     product = {}
-#     product['product_id'] = int(product_id)
-
-#     if not product['product_id']:
-#         return jsonify({"message": 'product_id is required'}), 400
-
-#     for record in product_records:
-#         if record['product_id'] == product['product_id']:
-#             product = record
-
-#     product_records.remove(product)
-
-#     return jsonify({"message": f"product {product['product_name']} has been deleted."}), 200
+    return jsonify({"message": f"category with id {category_id} has been deleted."}), 200

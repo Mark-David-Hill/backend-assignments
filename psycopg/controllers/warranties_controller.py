@@ -84,3 +84,23 @@ def warranty_update_by_id(request, warranty_id):
         return jsonify({"message": "Product has been updated"}), 404
 
     return jsonify({"message": f"{warranty_months} has been updated."}), 200
+
+
+def warranty_delete(warranty_id):
+    warranty = {}
+    warranty['warranty_id'] = int(warranty_id)
+
+    if not warranty['warranty_id']:
+        return jsonify({"message": 'warranty_id is required'}), 400
+
+    try:
+        cursor.execute("""
+            DELETE FROM Warranties
+            WHERE warranty_id=%s
+            """, [warranty_id])
+        conn.commit()
+
+    except:
+        return jsonify({"message": "warranty could not be deleted"}), 404
+
+    return jsonify({"message": f"warranty with id {warranty_id} has been deleted."}), 200

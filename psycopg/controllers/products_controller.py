@@ -266,10 +266,14 @@ def product_delete(product_id):
     if not product['product_id']:
         return jsonify({"message": 'product_id is required'}), 400
 
-    for record in product_records:
-        if record['product_id'] == product['product_id']:
-            product = record
+    try:
+        cursor.execute("""
+            DELETE FROM Products
+            WHERE product_id=%s
+            """, [product_id])
+        conn.commit()
 
-    product_records.remove(product)
+    except:
+        return jsonify({"message": "Product could not be deleted"}), 404
 
-    return jsonify({"message": f"product {product['product_name']} has been deleted."}), 200
+    return jsonify({"message": f"product with id {product_id} has been deleted."}), 200

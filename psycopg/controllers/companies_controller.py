@@ -97,53 +97,21 @@ def company_update_by_id(request, company_id):
     return jsonify({"message": f"{company_name} has been updated."}), 200
 
 
-# def product_update_by_id(request, product_id):
-#     data = request.form if request.form else request.json
-#     product = {}
-#     product['product_id'] = int(product_id)
+def company_delete(company_id):
+    company = {}
+    company['company_id'] = int(company_id)
 
-#     if not product['product_id']:
-#         return jsonify({"message": 'product_id is required'}), 400
+    if not company['company_id']:
+        return jsonify({"message": 'company_id is required'}), 400
 
-#     for record in product_records:
-#         if record['product_id'] == product['product_id']:
-#             product = record
+    try:
+        cursor.execute("""
+            DELETE FROM Companies
+            WHERE company_id=%s
+            """, [company_id])
+        conn.commit()
 
-#     product['product_name'] = data.get('product_name', product['product_name'])
-#     product['description'] = data.get('description', product['description'])
-#     product['price'] = data.get('price', product['price'])
-#     product['active'] = data.get('active', product['active'])
+    except:
+        return jsonify({"message": "company could not be deleted"}), 404
 
-#     return jsonify({"message": f"product {product['product_name']} has been updated", "results": product}), 200
-
-
-# def product_update_active_status(product_id):
-#     product = {}
-#     product['product_id'] = int(product_id)
-
-#     if not product['product_id']:
-#         return jsonify({"message": 'product_id is required'}), 400
-
-#     for record in product_records:
-#         if record['product_id'] == product['product_id']:
-#             product = record
-
-#     product['active'] = not product['active']
-
-#     return jsonify({"message": f"product {product['product_name']}'s active status has been set to {product['active']}", "results": product}), 200
-
-
-# def product_delete(product_id):
-#     product = {}
-#     product['product_id'] = int(product_id)
-
-#     if not product['product_id']:
-#         return jsonify({"message": 'product_id is required'}), 400
-
-#     for record in product_records:
-#         if record['product_id'] == product['product_id']:
-#             product = record
-
-#     product_records.remove(product)
-
-#     return jsonify({"message": f"product {product['product_name']} has been deleted."}), 200
+    return jsonify({"message": f"company with id {company_id} has been deleted."}), 200
