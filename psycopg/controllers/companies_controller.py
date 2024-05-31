@@ -15,13 +15,13 @@ def company_create(request):
     if not company_name:
         return jsonify({"message": "company_name is a Required Field"}), 400
 
-    result = cursor.execute("""
+    cursor.execute("""
         SELECT * FROM Companies
         WHERE company_name=%s""",
-                            [company_name])
+                   [company_name])
     result = cursor.fetchone()
     if result:
-        return jsonify({"message": 'company already exists'}), 400
+        return jsonify({"message": f'Company with name {company_name} already exists'}), 400
 
     try:
         cursor.execute(
@@ -34,7 +34,26 @@ def company_create(request):
         )
         conn.commit()
 
-        return jsonify({"message": f"{company_name} has been added to the Companies table."}), 200
+        cursor.execute(
+            """
+            SELECT *
+            FROM Companies
+            ORDER BY company_id DESC;
+            """
+        )
+        result = cursor.fetchone()
+
+        if result:
+            company_list = []
+
+            company_record = {
+                'company_id': result[0],
+                'company_name': result[1]
+            }
+
+            company_list.append(company_record)
+
+        return jsonify({"message": f"{company_name} has been added to the Companies table.", "result": company_list}), 200
 
     except Exception as e:
         print(e)
@@ -61,7 +80,7 @@ def companies_get():
 
                 company_list.append(company_record)
 
-            return jsonify(({"message": "companies found", "result": company_list})), 200
+            return jsonify(({"message": "Companies found", "results": company_list})), 200
         else:
             return jsonify(({"message": f"No companies found"})), 404
     except Exception as e:
@@ -131,7 +150,6 @@ def company_update_by_id(request, company_id):
             }
 
             company_list.append(company_record)
-
             return jsonify(({"message": f"{company_name} has been updated", "result": company_list})), 200
         else:
             return jsonify(({"message": "No company found"})), 404

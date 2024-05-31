@@ -20,8 +20,9 @@ def category_create(request):
         WHERE category_name=%s""",
                    [category_name])
     result = cursor.fetchone()
+
     if result:
-        return jsonify({"message": 'Category already exists'}), 400
+        return jsonify({"message": f'Category with name {category_name} already exists'}), 400
 
     try:
         cursor.execute(
@@ -34,10 +35,29 @@ def category_create(request):
         )
         conn.commit()
 
-    except:
-        return jsonify({"message": "Product could not be added"}), 404
+        cursor.execute(
+            """
+            SELECT *
+            FROM Categories
+            ORDER BY category_id DESC;
+            """
+        )
+        result = cursor.fetchone()
+        if result:
+            category_list = []
 
-    return jsonify({"message": f"{category_name} has been added to the Categories table."}), 200
+            category_record = {
+                'category_id': result[0],
+                'category_name': result[1]
+            }
+
+            category_list.append(category_record)
+
+        return jsonify({"message": f"{category_name} has been added to the Categories table.", "result": category_list}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "Product could not be added"}), 404
 
 
 def categories_get():
@@ -48,12 +68,23 @@ def categories_get():
             FROM Categories;
             """
         )
-        result = cursor.fetchall()
-        if result:
-            return jsonify(({"message": "categories found", "result": result})), 200
+        results = cursor.fetchall()
+        if results:
+            category_list = []
+
+            for category in results:
+                category_record = {
+                    'category_id': category[0],
+                    'category_name': category[1]
+                }
+
+                category_list.append(category_record)
+
+            return jsonify(({"message": "Categories found", "results": category_list})), 200
         else:
             return jsonify(({"message": f"No categories found"})), 404
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({"message": "Could not fetch categories data"}), 404
 
 
@@ -67,11 +98,22 @@ def category_get_by_id(category_id):
             """, [category_id]
         )
         result = cursor.fetchone()
+
         if result:
-            return jsonify(({"message": f"category with id {category_id} found", "result": result})), 200
+            category_list = []
+
+            category_record = {
+                'category_id': result[0],
+                'category_name': result[1]
+            }
+
+            category_list.append(category_record)
+
+            return jsonify(({"message": f"category with id {category_id} found", "result": category_list})), 200
         else:
             return jsonify(({"message": "No category found"})), 404
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({"message": "Could not fetch category data"}), 404
 
 
@@ -90,10 +132,31 @@ def category_update_by_id(request, category_id):
                        [category_name, category_id])
         conn.commit()
 
-    except:
-        return jsonify({"message": "Product has been updated"}), 404
+        cursor.execute(
+            """
+                SELECT *
+                FROM Categories
+                WHERE category_id=%s;
+                """, [category_id]
+        )
+        result = cursor.fetchone()
 
-    return jsonify({"message": f"{category_name} has been updated."}), 200
+        if result:
+            category_list = []
+
+            category_record = {
+                'category_id': result[0],
+                'category_name': result[1]
+            }
+
+            category_list.append(category_record)
+            return jsonify(({"message": f"{category_name} has been updated", "result": category_list})), 200
+        else:
+            return jsonify(({"message": "No category found"})), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "Category could not be updated"}), 404
 
 
 def category_delete(category_id):
@@ -104,13 +167,26 @@ def category_delete(category_id):
         return jsonify({"message": 'category_id is required'}), 400
 
     try:
-        cursor.execute("""
-            DELETE FROM Categories
-            WHERE category_id=%s
-            """, [category_id])
-        conn.commit()
+        cursor.execute(
+            """
+            SELECT *
+            FROM Categories
+            WHERE category_id=%s;
+            """, [category_id]
+        )
+        result = cursor.fetchone()
 
-    except:
+        if result:
+            cursor.execute("""
+                DELETE FROM Categories
+                WHERE category_id=%s
+                """, [category_id])
+            conn.commit()
+
+            return jsonify({"message": f"category with id {category_id} has been deleted."}), 200
+        else:
+            return jsonify({"message": f"no category exists with id {category_id}"}), 404
+
+    except Exception as e:
+        print(e)
         return jsonify({"message": "category could not be deleted"}), 404
-
-    return jsonify({"message": f"category with id {category_id} has been deleted."}), 200
