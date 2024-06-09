@@ -21,19 +21,41 @@ def product_create(request):
     product_name = post_data['product_name']
     price = post_data['price']
     description = post_data['description']
+    warranty_months = post_data['warranty_months']
+    category_id = post_data['category_id']
 
     if not product_name:
         return jsonify({"message": "product_name is a Required Field"}), 400
-
-    cursor.execute("""
-        SELECT * FROM Products
-        WHERE product_name=%s""",
-                   [product_name])
-    result = cursor.fetchone()
-    if result:
-        return jsonify({"message": 'Product already exists'}), 400
+    if not warranty_months:
+        return jsonify({"message": "warranty_months is a Required Field"}), 400
+    if not category_id:
+        return jsonify({"message": "category_id is a Required Field"}), 400
 
     try:
+        cursor.execute(
+            """
+            SELECT *
+            FROM Categories
+            WHERE category_id=%s;
+            """, [category_id]
+        )
+        result = cursor.fetchone()
+
+        if not result:
+            return jsonify({"message": f"There is no category with id {category_id}"}), 400
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM Companies
+            WHERE company_id=%s;
+            """, [company_id]
+        )
+        result = cursor.fetchone()
+
+        if not result:
+            return jsonify({"message": f"There is no company with id {company_id}"}), 400
+
         cursor.execute(
             """
             INSERT INTO Products
@@ -46,31 +68,51 @@ def product_create(request):
 
         cursor.execute(
             """
-            SELECT COUNT(*) 
+            SELECT *
             FROM Products
+            ORDER BY product_id DESC
+            LIMIT 1;        
             """
         )
-        print('after execute')
-        product_id = cursor.fetchone()[0]
-        print("product id:", product_id)
-        print("result:", result)
+        result = cursor.fetchone()
 
-        product_list = []
-        product_record = {
-            'product_id': product_id,
-            'company_id': company_id,
-            'product_name': product_name,
-            'price': price,
-            'description': description
-        }
-        print("before append")
-        product_list.append(product_record)
+        if result:
+            product_record = {
+                'product_id': result[0],
+                'product_name': result[1],
+                'price': result[2],
+                'description': result[3],
+                'category_name': result[4],
+                'warranty_months': result[5]
+            }
+
+            product_id = product_record['product_id']
+
+            cursor.execute(
+                """
+                INSERT INTO Warranties
+                (product_id, warranty_months)
+                VALUES(%s, %s);
+                """,
+                [product_id, warranty_months]
+            )
+            conn.commit()
+
+            cursor.execute(
+                """
+                INSERT INTO ProductsCategoriesXref
+                (product_id, category_id)
+                VALUES(%s, %s);
+                """,
+                [product_id, category_id]
+            )
+            conn.commit()
+
+        return jsonify({"message": f"{product_name} has been added to the Products table.", "result": product_record}), 200
 
     except Exception as e:
         print(e)
         return jsonify({"message": "Product could not be added"}), 404
-
-    return jsonify({"message": f"{product_name} has been added to the Products table.", "result": product_list}), 200
 
 
 def products_get():
