@@ -28,3 +28,13 @@ def products_get_active():
 @products.route('/product/<product_id>')
 def products_get_by_id(product_id):
     return products_controller.product_get_by_id(product_id)
+
+
+@products.route('/product/<product_id>', methods=['PUT'])
+def product_update_by_id(product_id):
+    return products_controller.product_update_by_id(request, product_id)
+
+
+@products.route('/product/delete/<product_id>', methods=["DELETE"])
+def product_delete(product_id):
+    return products_controller.product_delete(product_id)

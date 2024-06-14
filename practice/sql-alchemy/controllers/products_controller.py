@@ -214,3 +214,51 @@ def product_get_by_id(product_id):
     }
 
     return jsonify({"message": "product found", "results": product_dict}), 200
+
+
+def product_update_by_id(req, product_id):
+    post_data = req.form if req.form else req.json
+
+    product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
+
+    product_query.product_name = post_data.get("product_name", product_query)
+    product_query.price = post_data.get("price", product_query)
+    product_query.description = post_data.get("description", product_query)
+
+    company_dict = {
+        'company_id': product_query.company.company_id,
+        'company_name': product_query.company.company_name
+    }
+
+    product_dict = {
+        'product_id': product_query.product_id,
+        'product_name': product_query.product_name,
+        'description': product_query.description,
+        'price': product_query.price,
+        'active': product_query.active,
+        'company': company_dict
+    }
+
+    try:
+        db.session.commit()
+    except:
+        db.session.rollback()
+        return jsonify({"message": "unable to update record"}), 400
+
+    return jsonify({"message": "product updated", "result": product_dict})
+
+
+def product_delete(product_id):
+    product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
+
+    if not product_query:
+        return jsonify({"message": f"product with id {product_id} does not exist"}), 404
+
+    try:
+        db.session.delete(product_query)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        return jsonify({"message": "unable to delete"})
+
+    return jsonify({"message": f"product with id {product_id} deleted"})
