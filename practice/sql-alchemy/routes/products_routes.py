@@ -25,6 +25,11 @@ def products_get_active():
     return products_controller.products_get_active()
 
 
+@products.route('/product/company/<company_id>')
+def products_get_by_company_id(company_id):
+    return products_controller.products_get_by_company_id(company_id)
+
+
 @products.route('/product/<product_id>')
 def products_get_by_id(product_id):
     return products_controller.product_get_by_id(product_id)
