@@ -1,14 +1,14 @@
 from flask import jsonify
 
 from db import db
-from models.companies import Companies
+from models.categories import Categories
 
 
-def company_add(req):
+def category_add(req):
     post_data = req.form if req.form else req.json
 
-    fields = ['company_name']
-    required_fields = ['company_name']
+    fields = ['category_name']
+    required_fields = ['category_name']
 
     values = {}
 
@@ -20,63 +20,71 @@ def company_add(req):
 
         values[field] = field_data
 
-    new_company = Companies(**values)
+    new_category = Categories(**values)
 
     try:
-        db.session.add(new_company)
+        db.session.add(new_category)
         db.session.commit()
     except:
         db.session.rollback()
         return jsonify({"message": "unable to create record"}), 400
 
-    query = db.session.query(Companies).filter(Companies.company_name == values['company_name']).first()
+    query = db.session.query(Categories).filter(Categories.category_name == values['category_name']).first()
 
-    company = {
-        "company_id": query.company_id,
-        "company_name": query.company_name
+    category = {
+        "category_id": query.category_id,
+        "category_name": query.category_name
     }
 
-    return jsonify({"message": "company created", "result": company}), 201
+    return jsonify({"message": "category created", "result": category}), 201
 
 
-def companies_get_all():
-    companies_query = db.session.query(Companies).all()
+def categories_get_all():
+    categories_query = db.session.query(Categories).all()
 
-    print(companies_query)
+    print(categories_query)
 
-    company_list = []
+    category_list = []
 
-    for company in companies_query:
-        company_dict = {
-            'company_id': company.company_id,
-            'company_name': company.company_name
+    for category in categories_query:
+        category_dict = {
+            'category_id': category.category_id,
+            'category_name': category.category_name
         }
 
-        company_list.append(company_dict)
+        category_list.append(category_dict)
 
-    return jsonify({"message": "companies found", "results": company_list}), 200
+    if len(category_list) == 0:
+        return jsonify({"message": "no categories were found"}), 403
+
+    return jsonify({"message": "categories found", "results": category_list}), 200
 
 
-def company_get_by_id(company_id):
-    company_query = db.session.query(Companies).filter(Companies.company_id == company_id).first()
+def category_get_by_id(category_id):
+    category_query = db.session.query(Categories).filter(Categories.category_id == category_id).first()
 
-    if not company_query:
-        return jsonify({"message": f"company does not exist"}), 404
+    if not category_query:
+        return jsonify({"message": f"category does not exist"}), 404
 
-    company = {
-        'company_id': company_query.company_id,
-        'company_name': company_query.company_name
+    category = {
+        'category_id': category_query.category_id,
+        'category_name': category_query.category_name
     }
 
-    return jsonify({"message": "company found", "result": company}), 200
+    return jsonify({"message": "category found", "result": category}), 200
 
 
-def company_update(req, company_id):
+def category_update(req, category_id):
     post_data = req.form if req.form else req.json
 
-    company_query = db.session.query(Companies).filter(Companies.company_id == company_id).first()
+    category_query = db.session.query(Categories).filter(Categories.category_id == category_id).first()
 
-    company_query.company_name = post_data.get("company_name", company_query)
+    category_query.category_name = post_data.get("category_name", category_query)
+
+    category = {
+        "category_id": category_query.category_id,
+        "category_name": category_query.category_name
+    }
 
     try:
         db.session.commit()
@@ -84,20 +92,20 @@ def company_update(req, company_id):
         db.session.rollback()
         return jsonify({"message": "unable to update record"}), 400
 
-    return jsonify({"message": "company updated", "result": company_query})
+    return jsonify({"message": "category updated", "result": category})
 
 
-def company_delete(company_id):
-    company_query = db.session.query(Companies).filter(Companies.company_id == company_id).first()
+def category_delete(category_id):
+    category_query = db.session.query(Categories).filter(Categories.category_id == category_id).first()
 
-    if not company_query:
-        return jsonify({"message": f"company with id {company_id} does not exist"}), 404
+    if not category_query:
+        return jsonify({"message": f"category with id {category_id} does not exist"}), 404
 
     try:
-        db.session.delete(company_query)
+        db.session.delete(category_query)
         db.session.commit()
     except:
         db.session.rollback()
         return jsonify({"message": "unable to delete"})
 
-    return jsonify({"message": "company deleted", "result": company_query})
+    return jsonify({"message": f"category with id {category_id} deleted"})
