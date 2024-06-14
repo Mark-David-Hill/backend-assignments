@@ -42,8 +42,6 @@ def category_add(req):
 def categories_get_all():
     categories_query = db.session.query(Categories).all()
 
-    print(categories_query)
-
     category_list = []
 
     for category in categories_query:

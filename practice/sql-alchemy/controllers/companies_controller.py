@@ -42,8 +42,6 @@ def company_add(req):
 def companies_get_all():
     companies_query = db.session.query(Companies).all()
 
-    print(companies_query)
-
     company_list = []
 
     for company in companies_query:
@@ -53,6 +51,9 @@ def companies_get_all():
         }
 
         company_list.append(company_dict)
+
+    if len(company_list) == 0:
+        return jsonify({"message": "no companies were found"}), 403
 
     return jsonify({"message": "companies found", "results": company_list}), 200
 
