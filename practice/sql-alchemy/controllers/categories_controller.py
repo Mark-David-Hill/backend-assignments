@@ -78,18 +78,13 @@ def company_update(req, company_id):
 
     company_query.company_name = post_data.get("company_name", company_query)
 
-    company = {
-        "company_id": company_query.company_id,
-        "company_name": company_query.company_name
-    }
-
     try:
         db.session.commit()
     except:
         db.session.rollback()
         return jsonify({"message": "unable to update record"}), 400
 
-    return jsonify({"message": "company updated", "result": company})
+    return jsonify({"message": "company updated", "result": company_query})
 
 
 def company_delete(company_id):
@@ -105,4 +100,4 @@ def company_delete(company_id):
         db.session.rollback()
         return jsonify({"message": "unable to delete"})
 
-    return jsonify({"message": f"company with id {company_id} deleted"})
+    return jsonify({"message": "company deleted", "result": company_query})

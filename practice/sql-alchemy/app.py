@@ -4,9 +4,16 @@ import os
 
 from db import *
 
+from models.products_categories_xref import products_categories_xref
+from models.warranties import Warranties
+from models.categories import Categories
 from models.companies import Companies
+from models.products import Products
 
+import routes.warranties_routes
+import routes.categories_routes
 import routes.companies_routes
+import routes.products_routes
 
 flask_host = os.environ.get("FLASK_HOST")
 flask_port = os.environ.get("FLASK_PORT")
@@ -17,7 +24,10 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+app.register_blueprint(routes.warranties_routes.warranties)
+app.register_blueprint(routes.categories_routes.categories)
 app.register_blueprint(routes.companies_routes.companies)
+app.register_blueprint(routes.products_routes.products)
 
 init_db(app, db)
 
