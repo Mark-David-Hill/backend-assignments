@@ -113,4 +113,4 @@ def company_delete(company_id):
         return jsonify({"message": "unable to delete"})
 
 # Double check to see if the result part of this works
-    return jsonify({"message": f"company with id {company_id} deleted", "result": company_schema.dump(company_query)})
+    return jsonify({"message": f"company with id {company_id} deleted", "deleted company": company_schema.dump(company_query)})

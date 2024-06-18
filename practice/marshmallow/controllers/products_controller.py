@@ -1,45 +1,53 @@
 from flask import jsonify
 
 from db import db
-from models.products import Products
+from models.products import Products, products_schema, product_schema
 from models.categories import Categories
 from models.warranties import Warranties
+from util.reflection import populate_object
 
 
 def product_add(request):
     post_data = request.form if request.form else request.json
 
-    fields = ['product_name', 'description', 'price', 'company_id', 'active']
+    # fields = ['product_name', 'description', 'price', 'company_id', 'active']
 
-    values = {}
+    # values = {}
 
-    for field in fields:
-        field_data = post_data.get(field)
+    # for field in fields:
+    #     field_data = post_data.get(field)
 
-        values[field] = field_data
+    #     values[field] = field_data
 
-    new_product = Products(values['product_name'], values['description'], values['price'], values['company_id'], values['active'])
+    # new_product = Products(values['product_name'], values['description'], values['price'], values['company_id'], values['active'])
 
-    db.session.add(new_product)
-    db.session.commit()
+    new_product = Products.new_product_obj()
+    populate_object(new_product, post_data)
 
-    product_query = db.session.query(Products).filter(Products.product_name == values['product_name']).first()
+    try:
+        db.session.add(new_product)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        return jsonify({"message": "unable to create record"}), 400
 
-    company_dict = {
-        'company_id': product_query.company.company_id,
-        'company_name': product_query.company.company_name
-    }
+    # product_query = db.session.query(Products).filter(Products.product_name == values['product_name']).first()
 
-    product_dict = {
-        'product_id': product_query.product_id,
-        'product_name': product_query.product_name,
-        'description': product_query.description,
-        'price': product_query.price,
-        'active': product_query.active,
-        'company': company_dict
-    }
+    # company_dict = {
+    #     'company_id': product_query.company.company_id,
+    #     'company_name': product_query.company.company_name
+    # }
 
-    return jsonify({"message": "product created", "result": product_dict}), 201
+    # product_dict = {
+    #     'product_id': product_query.product_id,
+    #     'product_name': product_query.product_name,
+    #     'description': product_query.description,
+    #     'price': product_query.price,
+    #     'active': product_query.active,
+    #     'company': company_dict
+    # }
+
+    return jsonify({"message": "product created", "result": product_schema.dump(new_product)}), 201
 
 
 def product_category_add(request):
@@ -86,139 +94,139 @@ def product_category_add(request):
 def products_get_all():
     products_query = db.session.query(Products).all()
 
-    product_list = []
+    # product_list = []
 
-    for product in products_query:
-        category_list = []
+    # for product in products_query:
+    #     category_list = []
 
-        for category in product.categories:
-            category_list.append({
-                'category_id': category.category_id,
-                'category_name': category.category_name
-            })
+    #     for category in product.categories:
+    #         category_list.append({
+    #             'category_id': category.category_id,
+    #             'category_name': category.category_name
+    #         })
 
-        company_dict = {
-            'company_id': product.company.company_id,
-            'company_name': product.company.company_name
-        }
+    #     company_dict = {
+    #         'company_id': product.company.company_id,
+    #         'company_name': product.company.company_name
+    #     }
 
-        if product.warranty:
-            warranty_dict = {
-                'warranty_id': product.warranty.warranty_id,
-                'warranty_months': product.warranty.warranty_months
-            }
-        else:
-            warranty_dict = {}
+    #     if product.warranty:
+    #         warranty_dict = {
+    #             'warranty_id': product.warranty.warranty_id,
+    #             'warranty_months': product.warranty.warranty_months
+    #         }
+    #     else:
+    #         warranty_dict = {}
 
-        product_dict = {
-            'product_id': product.product_id,
-            'product_name': product.product_name,
-            'price': product.price,
-            'description': product.description,
-            'active': product.active,
-            'company': company_dict,
-            'warranty': warranty_dict,
-            'categories': category_list
-        }
+    #     product_dict = {
+    #         'product_id': product.product_id,
+    #         'product_name': product.product_name,
+    #         'price': product.price,
+    #         'description': product.description,
+    #         'active': product.active,
+    #         'company': company_dict,
+    #         'warranty': warranty_dict,
+    #         'categories': category_list
+    #     }
 
-        product_list.append(product_dict)
+    #     product_list.append(product_dict)
 
-    if len(product_list) == 0:
-        return jsonify({"message": "no products were found"}), 403
+    # if len(product_list) == 0:
+    #     return jsonify({"message": "no products were found"}), 403
 
-    return jsonify({"message": "products found", "results": product_list}), 200
+    return jsonify({"message": "products found", "results": products_schema.dump(products_query)}), 200
 
 
 def products_get_active():
     products_query = db.session.query(Products).filter(Products.active == True).all()
 
-    product_list = []
+    # product_list = []
 
-    for product in products_query:
-        category_list = []
+    # for product in products_query:
+    #     category_list = []
 
-        for category in product.categories:
-            category_list.append({
-                'category_id': category.category_id,
-                'category_name': category.category_name
-            })
+    #     for category in product.categories:
+    #         category_list.append({
+    #             'category_id': category.category_id,
+    #             'category_name': category.category_name
+    #         })
 
-        company_dict = {
-            'company_id': product.company.company_id,
-            'company_name': product.company.company_name
-        }
+    #     company_dict = {
+    #         'company_id': product.company.company_id,
+    #         'company_name': product.company.company_name
+    #     }
 
-        if product.warranty:
-            warranty_dict = {
-                'warranty_id': product.warranty.warranty_id,
-                'warranty_months': product.warranty.warranty_months
-            }
-        else:
-            warranty_dict = {}
+    #     if product.warranty:
+    #         warranty_dict = {
+    #             'warranty_id': product.warranty.warranty_id,
+    #             'warranty_months': product.warranty.warranty_months
+    #         }
+    #     else:
+    #         warranty_dict = {}
 
-        product_dict = {
-            'product_id': product.product_id,
-            'product_name': product.product_name,
-            'price': product.price,
-            'description': product.description,
-            'active': product.active,
-            'company': company_dict,
-            'warranty': warranty_dict,
-            'categories': category_list
-        }
+    #     product_dict = {
+    #         'product_id': product.product_id,
+    #         'product_name': product.product_name,
+    #         'price': product.price,
+    #         'description': product.description,
+    #         'active': product.active,
+    #         'company': company_dict,
+    #         'warranty': warranty_dict,
+    #         'categories': category_list
+    #     }
 
-        product_list.append(product_dict)
+    #     product_list.append(product_dict)
 
-    if len(product_list) == 0:
-        return jsonify({"message": "no products were found"}), 403
+    # if len(product_list) == 0:
+    #     return jsonify({"message": "no products were found"}), 403
 
-    return jsonify({"message": "products found", "results": product_list}), 200
+    return jsonify({"message": "products found", "results": products_schema.dump(products_query)}), 200
 
 
 def products_get_by_company_id(company_id):
     products_query = db.session.query(Products).filter(Products.company_id == company_id).all()
 
-    product_list = []
+    # product_list = []
 
-    for product in products_query:
-        category_list = []
+    # for product in products_query:
+    #     category_list = []
 
-        for category in product.categories:
-            category_list.append({
-                'category_id': category.category_id,
-                'category_name': category.category_name
-            })
+    #     for category in product.categories:
+    #         category_list.append({
+    #             'category_id': category.category_id,
+    #             'category_name': category.category_name
+    #         })
 
-        company_dict = {
-            'company_id': product.company.company_id,
-            'company_name': product.company.company_name
-        }
+    #     company_dict = {
+    #         'company_id': product.company.company_id,
+    #         'company_name': product.company.company_name
+    #     }
 
-        if product.warranty:
-            warranty_dict = {
-                'warranty_id': product.warranty.warranty_id,
-                'warranty_months': product.warranty.warranty_months
-            }
-        else:
-            warranty_dict = {}
+    #     if product.warranty:
+    #         warranty_dict = {
+    #             'warranty_id': product.warranty.warranty_id,
+    #             'warranty_months': product.warranty.warranty_months
+    #         }
+    #     else:
+    #         warranty_dict = {}
 
-        product_dict = {
-            'product_id': product.product_id,
-            'product_name': product.product_name,
-            'price': product.price,
-            'description': product.description,
-            'active': product.active,
-            'company': company_dict,
-            'warranty': warranty_dict,
-            'categories': category_list
-        }
+    #     product_dict = {
+    #         'product_id': product.product_id,
+    #         'product_name': product.product_name,
+    #         'price': product.price,
+    #         'description': product.description,
+    #         'active': product.active,
+    #         'company': company_dict,
+    #         'warranty': warranty_dict,
+    #         'categories': category_list
+    #     }
 
-        product_list.append(product_dict)
+    #     product_list.append(product_dict)
 
-    if len(product_list) == 0:
-        return jsonify({"message": "no products were found"}), 403
+    # if len(product_list) == 0:
+    #     return jsonify({"message": "no products were found"}), 403
 
-    return jsonify({"message": "products found", "results": product_list}), 200
+    return jsonify({"message": "products found", "results": products_schema.dump(products_query)}), 200
 
 
 def product_get_by_id(product_id):
@@ -227,39 +235,39 @@ def product_get_by_id(product_id):
     if not product_query:
         return jsonify({"message": "product not found"}), 404
 
-    category_list = []
+    # category_list = []
 
-    for category in product_query.categories:
-        category_list.append({
-            'category_id': category.category_id,
-            'category_name': category.category_name
-        })
+    # for category in product_query.categories:
+    #     category_list.append({
+    #         'category_id': category.category_id,
+    #         'category_name': category.category_name
+    #     })
 
-    company_dict = {
-        'company_id': product_query.company.company_id,
-        'company_name': product_query.company.company_name
-    }
+    # company_dict = {
+    #     'company_id': product_query.company.company_id,
+    #     'company_name': product_query.company.company_name
+    # }
 
-    if product_query.warranty:
-        warranty_dict = {
-            'warranty_id': product_query.warranty.warranty_id,
-            'warranty_months': product_query.warranty.warranty_months
-        }
-    else:
-        warranty_dict = {}
+    # if product_query.warranty:
+    #     warranty_dict = {
+    #         'warranty_id': product_query.warranty.warranty_id,
+    #         'warranty_months': product_query.warranty.warranty_months
+    #     }
+    # else:
+    #     warranty_dict = {}
 
-    product_dict = {
-        'product_id': product_query.product_id,
-        'product_name': product_query.product_name,
-        'description': product_query.description,
-        'price': product_query.price,
-        'active': product_query.active,
-        'company': company_dict,
-        'warranty': warranty_dict,
-        'categories': category_list
-    }
+    # product_dict = {
+    #     'product_id': product_query.product_id,
+    #     'product_name': product_query.product_name,
+    #     'description': product_query.description,
+    #     'price': product_query.price,
+    #     'active': product_query.active,
+    #     'company': company_dict,
+    #     'warranty': warranty_dict,
+    #     'categories': category_list
+    # }
 
-    return jsonify({"message": "product found", "results": product_dict}), 200
+    return jsonify({"message": "product found", "results": product_schema.dump(product_query)}), 200
 
 
 def product_update_by_id(req, product_id):
@@ -267,23 +275,25 @@ def product_update_by_id(req, product_id):
 
     product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
 
-    product_query.product_name = post_data.get("product_name", product_query)
-    product_query.price = post_data.get("price", product_query)
-    product_query.description = post_data.get("description", product_query)
+    populate_object(product_query, post_data)
 
-    company_dict = {
-        'company_id': product_query.company.company_id,
-        'company_name': product_query.company.company_name
-    }
+    # product_query.product_name = post_data.get("product_name", product_query)
+    # product_query.price = post_data.get("price", product_query)
+    # product_query.description = post_data.get("description", product_query)
 
-    product_dict = {
-        'product_id': product_query.product_id,
-        'product_name': product_query.product_name,
-        'description': product_query.description,
-        'price': product_query.price,
-        'active': product_query.active,
-        'company': company_dict
-    }
+    # company_dict = {
+    #     'company_id': product_query.company.company_id,
+    #     'company_name': product_query.company.company_name
+    # }
+
+    # product_dict = {
+    #     'product_id': product_query.product_id,
+    #     'product_name': product_query.product_name,
+    #     'description': product_query.description,
+    #     'price': product_query.price,
+    #     'active': product_query.active,
+    #     'company': company_dict
+    # }
 
     try:
         db.session.commit()
@@ -291,7 +301,7 @@ def product_update_by_id(req, product_id):
         db.session.rollback()
         return jsonify({"message": "unable to update record"}), 400
 
-    return jsonify({"message": "product updated", "result": product_dict})
+    return jsonify({"message": "product updated", "result": product_schema.dump(product_query)})
 
 
 def product_delete(product_id):
@@ -307,4 +317,4 @@ def product_delete(product_id):
         db.session.rollback()
         return jsonify({"message": "unable to delete"})
 
-    return jsonify({"message": f"product with id {product_id} deleted"})
+    return jsonify({"message": f"product with id {product_id} deleted", "deleted product": product_schema.dump(product_query)})

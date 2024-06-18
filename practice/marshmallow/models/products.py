@@ -27,12 +27,15 @@ class Products(db.Model):
         self.company_id = company_id
         self.active = active
 
+    def new_product_obj():
+        return Products("")
+
 
 class ProductsSchema(ma.Schema):
     class Meta:
         fields = ['product_id', 'product_name', 'description', 'price', 'company', 'categories', 'active']
     company = ma.fields.Nested("CompaniesSchema", exclude=['products'])
-    categories = ma.fields.Nested("CategoriesSchema", many=True, exclude=['products'])
+    categories = ma.fields.Nested("CategoriesSchema", many=True)
     warranty = ma.fields.Nested("WarrantiesSchema", exclude=['product'])
 
 

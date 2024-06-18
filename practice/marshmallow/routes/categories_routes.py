@@ -1,7 +1,6 @@
 from flask import request, Blueprint
 
 import controllers
-# from controllers import categories_controller
 
 categories = Blueprint('categories', __name__)
 

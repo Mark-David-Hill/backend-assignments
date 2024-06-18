@@ -1,7 +1,6 @@
 from flask import request, Blueprint
 
 import controllers
-# from controllers import warranties_controller
 
 warranties = Blueprint('warranties', __name__)
 

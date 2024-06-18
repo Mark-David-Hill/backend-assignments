@@ -17,3 +17,16 @@ class Warranties(db.Model):
     def __init__(self, warranty_months, product_id):
         self.warranty_months = warranty_months
         self.product_id = product_id
+
+    def new_warranty_obj():
+        return Warranties("")
+
+
+class WarrantiesSchema(ma.Schema):
+    class Meta:
+        fields = ['warranty_id', 'warranty_months', 'product']
+    product = ma.fields.Nested("ProductSchema", exclude=['company'])
+
+
+warranty_schema = WarrantiesSchema()
+warranties_schema = WarrantiesSchema(many=True)

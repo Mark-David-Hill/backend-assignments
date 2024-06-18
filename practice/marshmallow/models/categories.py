@@ -16,3 +16,15 @@ class Categories(db.Model):
 
     def __init__(self, category_name):
         self.category_name = category_name
+
+    def new_category_obj():
+        return Categories("")
+
+
+class CategoriesSchema(ma.Schema):
+    class Meta:
+        fields = ['category_id', 'category_name']
+
+
+category_schema = CategoriesSchema()
+categories_schema = CategoriesSchema(many=True)
