@@ -29,11 +29,11 @@ def category_add(req):
         db.session.rollback()
         return jsonify({"message": "unable to create record"}), 400
 
-    query = db.session.query(Categories).filter(Categories.category_name == values['category_name']).first()
+    print("NEW CATEGORY: ", new_category)
 
     category = {
-        "category_id": query.category_id,
-        "category_name": query.category_name
+        "category_id": new_category.category_id,
+        "category_name": new_category.category_name
     }
 
     return jsonify({"message": "category created", "result": category}), 201
@@ -42,7 +42,7 @@ def category_add(req):
 def categories_get_all():
     categories_query = db.session.query(Categories).all()
 
-    category_list = []
+    categories_list = []
 
     for category in categories_query:
         category_dict = {
@@ -50,12 +50,12 @@ def categories_get_all():
             'category_name': category.category_name
         }
 
-        category_list.append(category_dict)
+        categories_list.append(category_dict)
 
-    if len(category_list) == 0:
-        return jsonify({"message": "no categories were found"}), 403
+    if len(categories_list) == 0:
+        return jsonify({"message": "no categories were found"}), 404
 
-    return jsonify({"message": "categories found", "results": category_list}), 200
+    return jsonify({"message": "categories found", "results": categories_list}), 200
 
 
 def category_get_by_id(category_id):
@@ -90,7 +90,7 @@ def category_update(req, category_id):
         db.session.rollback()
         return jsonify({"message": "unable to update record"}), 400
 
-    return jsonify({"message": "category updated", "result": category})
+    return jsonify({"message": "category updated", "result": category}), 200
 
 
 def category_delete(category_id):
@@ -104,6 +104,6 @@ def category_delete(category_id):
         db.session.commit()
     except:
         db.session.rollback()
-        return jsonify({"message": "unable to delete"})
+        return jsonify({"message": "unable to delete category"}), 400
 
-    return jsonify({"message": f"category with id {category_id} deleted"})
+    return jsonify({"message": f"category with id {category_id} deleted"}), 200

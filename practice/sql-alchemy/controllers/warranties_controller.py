@@ -29,12 +29,10 @@ def warranty_add(req):
         db.session.rollback()
         return jsonify({"message": "unable to create record"}), 400
 
-    query = db.session.query(Warranties).filter(Warranties.warranty_months == values['warranty_months']).first()
-
     warranty = {
-        "warranty_id": query.warranty_id,
-        "product_id": query.product_id,
-        "warranty_months": query.warranty_months
+        "warranty_id": new_warranty.warranty_id,
+        "product_id": new_warranty.product_id,
+        "warranty_months": new_warranty.warranty_months
     }
 
     return jsonify({"message": "warranty created", "result": warranty}), 201
@@ -43,7 +41,7 @@ def warranty_add(req):
 def warranties_get_all():
     warranties_query = db.session.query(Warranties).all()
 
-    warranty_list = []
+    warranties_list = []
 
     for warranty in warranties_query:
         warranty_dict = {
@@ -52,12 +50,12 @@ def warranties_get_all():
             "warranty_months": warranty.warranty_months
         }
 
-        warranty_list.append(warranty_dict)
+        warranties_list.append(warranty_dict)
 
-    if len(warranty_list) == 0:
-        return jsonify({"message": "no warranties were found"}), 403
+    if len(warranties_list) == 0:
+        return jsonify({"message": "no warranties were found"}), 404
 
-    return jsonify({"message": "warranties found", "results": warranty_list}), 200
+    return jsonify({"message": "warranties found", "results": warranties_list}), 200
 
 
 def warranty_get_by_id(warranty_id):
@@ -94,7 +92,7 @@ def warranty_update(req, warranty_id):
         db.session.rollback()
         return jsonify({"message": "unable to update record"}), 400
 
-    return jsonify({"message": "warranty updated", "result": warranty})
+    return jsonify({"message": "warranty updated", "result": warranty}), 200
 
 
 def warranty_delete(warranty_id):
@@ -108,6 +106,6 @@ def warranty_delete(warranty_id):
         db.session.commit()
     except:
         db.session.rollback()
-        return jsonify({"message": "unable to delete"})
+        return jsonify({"message": "unable to delete"}), 400
 
-    return jsonify({"message": f"warranty with id {warranty_id} deleted"})
+    return jsonify({"message": f"warranty with id {warranty_id} deleted"}), 200

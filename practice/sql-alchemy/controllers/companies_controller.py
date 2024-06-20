@@ -29,11 +29,9 @@ def company_add(req):
         db.session.rollback()
         return jsonify({"message": "unable to create record"}), 400
 
-    query = db.session.query(Companies).filter(Companies.company_name == values['company_name']).first()
-
     company = {
-        "company_id": query.company_id,
-        "company_name": query.company_name
+        "company_id": new_company.company_id,
+        "company_name": new_company.company_name
     }
 
     return jsonify({"message": "company created", "result": company}), 201
@@ -42,7 +40,7 @@ def company_add(req):
 def companies_get_all():
     companies_query = db.session.query(Companies).all()
 
-    company_list = []
+    companies_list = []
 
     for company in companies_query:
         company_dict = {
@@ -50,12 +48,12 @@ def companies_get_all():
             'company_name': company.company_name
         }
 
-        company_list.append(company_dict)
+        companies_list.append(company_dict)
 
-    if len(company_list) == 0:
-        return jsonify({"message": "no companies were found"}), 403
+    if len(companies_list) == 0:
+        return jsonify({"message": "no companies were found"}), 404
 
-    return jsonify({"message": "companies found", "results": company_list}), 200
+    return jsonify({"message": "companies found", "results": companies_list}), 200
 
 
 def company_get_by_id(company_id):
@@ -90,7 +88,7 @@ def company_update(req, company_id):
         db.session.rollback()
         return jsonify({"message": "unable to update record"}), 400
 
-    return jsonify({"message": "company updated", "result": company})
+    return jsonify({"message": "company updated", "result": company}), 200
 
 
 def company_delete(company_id):
@@ -104,6 +102,6 @@ def company_delete(company_id):
         db.session.commit()
     except:
         db.session.rollback()
-        return jsonify({"message": "unable to delete"})
+        return jsonify({"message": "unable to delete company"}), 400
 
-    return jsonify({"message": f"company with id {company_id} deleted"})
+    return jsonify({"message": f"company with id {company_id} deleted"}), 200

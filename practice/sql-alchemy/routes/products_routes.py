@@ -15,6 +15,11 @@ def product_category_add():
     return products_controller.product_category_add(request)
 
 
+@products.route('/product/category/delete', methods=['DELETE'])
+def product_category_remove():
+    return products_controller.product_category_remove(request)
+
+
 @products.route('/products')
 def products_get_all():
     return products_controller.products_get_all()
