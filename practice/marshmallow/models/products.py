@@ -14,9 +14,9 @@ class Products(db.Model):
     description = db.Column(db.String())
     price = db.Column(db.Float(), nullable=False)
     active = db.Column(db.Boolean(), default=True)
-    company_id = db.Column(UUID(as_uuid=True), db.ForeignKey("Companies.company_id"), nullable=False)
+    company_id = db.Column(UUID(as_uuid=True), db.ForeignKey("Companies.company_id", ondelete="CASCADE"), nullable=False)
 
-    company = db.relationship('Companies', back_populates='products')
+    company = db.relationship('Companies', back_populates='products', cascade='all')
     categories = db.relationship('Categories', secondary=products_categories_xref, back_populates='products')
     warranty = db.relationship('Warranties', back_populates='product', uselist=False, cascade='all')
 
@@ -28,7 +28,7 @@ class Products(db.Model):
         self.active = active
 
     def new_product_obj():
-        return Products("")
+        return Products("", "", 0.0, "", True)
 
 
 class ProductsSchema(ma.Schema):

@@ -61,6 +61,9 @@ def warranties_get_all():
     # if len(warranty_list) == 0:
     #     return jsonify({"message": "no warranties were found"}), 403
 
+    if len(warranties_query) == 0:
+        return jsonify({"message": "no warranties were found"}), 404
+
     return jsonify({"message": "warranties found", "results": warranties_schema.dump(warranties_query)}), 200
 
 
@@ -100,7 +103,7 @@ def warranty_update(req, warranty_id):
         db.session.rollback()
         return jsonify({"message": "unable to update record"}), 400
 
-    return jsonify({"message": "warranty updated", "result": warranty_schema.dump(warranty_query)})
+    return jsonify({"message": "warranty updated", "result": warranty_schema.dump(warranty_query)}), 200
 
 
 def warranty_delete(warranty_id):
@@ -114,6 +117,6 @@ def warranty_delete(warranty_id):
         db.session.commit()
     except:
         db.session.rollback()
-        return jsonify({"message": "unable to delete"})
+        return jsonify({"message": "unable to delete"}), 400
 
-    return jsonify({"message": f"warranty with id {warranty_id} deleted", "deleted warranty": warranty_schema.dump(warranty_query)})
+    return jsonify({"message": f"warranty with id {warranty_id} deleted", "deleted warranty": warranty_schema.dump(warranty_query)}), 200

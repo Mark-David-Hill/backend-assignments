@@ -59,6 +59,9 @@ def categories_get_all():
     # if len(category_list) == 0:
     #     return jsonify({"message": "no categories were found"}), 403
 
+    if len(categories_query) == 0:
+        return jsonify({"message": "no categories were found"}), 404
+
     return jsonify({"message": "categories found", "results": categories_schema.dump(categories_query)}), 200
 
 
@@ -96,7 +99,7 @@ def category_update(req, category_id):
         db.session.rollback()
         return jsonify({"message": "unable to update record"}), 400
 
-    return jsonify({"message": "category updated", "result": category_schema.dump(category_query)})
+    return jsonify({"message": "category updated", "result": category_schema.dump(category_query)}), 200
 
 
 def category_delete(category_id):
@@ -110,6 +113,6 @@ def category_delete(category_id):
         db.session.commit()
     except:
         db.session.rollback()
-        return jsonify({"message": "unable to delete"})
+        return jsonify({"message": "unable to delete"}), 400
 
-    return jsonify({"message": f"category with id {category_id} deleted", "deleted category": category_schema.dump(category_query)})
+    return jsonify({"message": f"category with id {category_id} deleted", "deleted category": category_schema.dump(category_query)}), 200

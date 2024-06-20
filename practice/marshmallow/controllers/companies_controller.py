@@ -59,6 +59,9 @@ def companies_get_all():
     # if len(company_list) == 0:
     #     return jsonify({"message": "no companies were found"}), 403
 
+    if len(companies_query) == 0:
+        return jsonify({"message": "no companies were found"}), 404
+
     return jsonify({"message": "companies found", "results": companies_schema.dump(companies_query)}), 200
 
 
@@ -96,7 +99,7 @@ def company_update(req, company_id):
         db.session.rollback()
         return jsonify({"message": "unable to update record"}), 400
 
-    return jsonify({"message": "company updated", "result": company_schema.dump(company_query)})
+    return jsonify({"message": "company updated", "result": company_schema.dump(company_query)}), 200
 
 
 def company_delete(company_id):
@@ -110,7 +113,7 @@ def company_delete(company_id):
         db.session.commit()
     except:
         db.session.rollback()
-        return jsonify({"message": "unable to delete"})
+        return jsonify({"message": "unable to delete"}), 400
 
 # Double check to see if the result part of this works
-    return jsonify({"message": f"company with id {company_id} deleted", "deleted company": company_schema.dump(company_query)})
+    return jsonify({"message": f"company with id {company_id} deleted", "deleted company": company_schema.dump(company_query)}), 200

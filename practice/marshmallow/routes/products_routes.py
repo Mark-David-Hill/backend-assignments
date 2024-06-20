@@ -11,8 +11,8 @@ def product_add():
 
 
 @products.route('/product/category', methods=['POST'])
-def product_category_add():
-    return controllers.products_controller.product_category_add(request)
+def product_category_update():
+    return controllers.products_controller.product_category_update(request)
 
 
 @products.route('/products')
