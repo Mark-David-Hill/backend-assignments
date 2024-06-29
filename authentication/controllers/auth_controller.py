@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from db import db
 from models.app_users import AppUsers
 from models.auth_tokens import AuthTokens, auth_token_schema
+from lib.authenticate import auth
 
 
 def auth_token_add(req):
@@ -39,3 +40,15 @@ def auth_token_add(req):
             return jsonify({"message": "no user data found"}), 404
 
         return jsonify({"message": "authorization successful", "result": auth_token_schema.dump(new_token)}), 201
+
+
+# @auth
+# def logout(req):
+#     try:
+#         db.session.delete(category_query)
+#         db.session.commit()
+#     except:
+#         db.session.rollback()
+#         return jsonify({"message": "unable to delete"}), 400
+
+#     return jsonify({"message": f"category with id {category_id} deleted", "deleted category": category_schema.dump(category_query)}), 200

@@ -3,8 +3,11 @@ from flask import jsonify
 from db import db
 from models.companies import Companies, companies_schema, company_schema
 from util.reflection import populate_object
+from lib.authenticate import auth
 
 
+# @has_admin_permissions
+@auth
 def company_add(req):
     post_data = req.form if req.form else req.json
 
@@ -39,6 +42,8 @@ def company_get_by_id(company_id):
     return jsonify({"message": "company found", "result": company_schema.dump(company_query)}), 200
 
 
+# @has_admin_permissions
+@auth
 def company_update(req, company_id):
     post_data = req.form if req.form else req.json
 
@@ -55,6 +60,8 @@ def company_update(req, company_id):
     return jsonify({"message": "company updated", "result": company_schema.dump(company_query)}), 200
 
 
+# @has_admin_permissions
+@auth
 def company_delete(company_id):
     company_query = db.session.query(Companies).filter(Companies.company_id == company_id).first()
 

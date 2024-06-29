@@ -3,8 +3,10 @@ from flask import jsonify
 from db import db
 from models.warranties import Warranties, warranties_schema, warranty_schema
 from util.reflection import populate_object
+from lib.authenticate import auth
 
 
+@auth
 def warranty_add(req):
     post_data = req.form if req.form else req.json
 
@@ -39,6 +41,7 @@ def warranty_get_by_id(warranty_id):
     return jsonify({"message": "warranty found", "result": warranty_schema.dump(warranty_query)}), 200
 
 
+@auth
 def warranty_update(req, warranty_id):
     post_data = req.form if req.form else req.json
 
@@ -55,6 +58,8 @@ def warranty_update(req, warranty_id):
     return jsonify({"message": "warranty updated", "result": warranty_schema.dump(warranty_query)}), 200
 
 
+# @has_admin_permissions
+@auth
 def warranty_delete(warranty_id):
     warranty_query = db.session.query(Warranties).filter(Warranties.warranty_id == warranty_id).first()
 

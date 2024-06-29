@@ -24,3 +24,53 @@ def user_add(req):
         return jsonify({"message": "unable to create user"}), 400
 
     return jsonify({"message": "user created", "result": app_user_schema.dump(new_user)}), 201
+
+
+def users_get_all():
+    users_query = db.session.query(AppUsers).all()
+
+    if len(users_query) == 0:
+        return jsonify({"message": "no users were found"}), 404
+
+    return jsonify({"message": "users found", "results": app_users_schema.dump(users_query)}), 200
+
+
+def user_get_by_id(user_id):
+    user_query = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
+
+    if not user_query:
+        return jsonify({"message": f"user does not exist"}), 404
+
+    return jsonify({"message": "user found", "result": app_user_schema.dump(user_query)}), 200
+
+
+def user_update(req, user_id):
+    post_data = req.form if req.form else req.json
+
+    user_query = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
+
+    populate_object(user_query, post_data)
+
+    try:
+        db.session.commit()
+    except:
+        db.session.rollback()
+        return jsonify({"message": "unable to update record"}), 400
+
+    return jsonify({"message": "user updated", "result": app_user_schema.dump(user_query)}), 200
+
+
+def user_delete(user_id):
+    user_query = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
+
+    if not user_query:
+        return jsonify({"message": f"user with id {user_id} does not exist"}), 404
+
+    try:
+        db.session.delete(user_query)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        return jsonify({"message": "unable to delete"}), 400
+
+    return jsonify({"message": f"user with id {user_id} deleted", "deleted user": app_user_schema.dump(user_query)}), 200

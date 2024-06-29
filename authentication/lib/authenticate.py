@@ -39,6 +39,7 @@ def fail_response():
 def auth(function):
     @functools.wraps(function)
     def wrapper_auth_return(*args, **kwargs):
+
         auth_info = validate_token(args[0])
 
         if auth_info:
@@ -47,3 +48,19 @@ def auth(function):
             return fail_response()
 
     return wrapper_auth_return
+
+
+# def has_admin_permissions(function):
+#     @functools.wraps(function)
+#     def wrapper_has_admin_permissions_return(*args, **kwargs):
+#         print("ARGS", args)
+#         print("KWARGS", kwargs)
+#         user_id =
+#         user_role =
+
+#         if user_role == "admin" or user_role == "super-admin":
+#             return function(*args, **kwargs)
+#         else:
+#         return jsonify({"message": "forbidden: admin permissions required"}), 403
+
+#     return wrapper_has_admin_permissions_return

@@ -25,6 +25,7 @@ def product_add(request):
     return jsonify({"message": "product created", "result": product_schema.dump(new_product)}), 201
 
 
+@auth
 def product_category_update(request):
     post_data = request.form if request.form else request.json
 
@@ -88,6 +89,7 @@ def product_get_by_id(product_id):
     return jsonify({"message": "product found", "results": product_schema.dump(product_query)}), 200
 
 
+@auth
 def product_update_by_id(req, product_id):
     post_data = req.form if req.form else req.json
 
@@ -104,6 +106,8 @@ def product_update_by_id(req, product_id):
     return jsonify({"message": "product updated", "result": product_schema.dump(product_query)}), 200
 
 
+# @has_admin_permissions
+@auth
 def product_delete(product_id):
     product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
 
