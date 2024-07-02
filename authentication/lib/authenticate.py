@@ -3,9 +3,9 @@ import functools
 from datetime import datetime
 from uuid import UUID
 
-
 from db import db
 from models.auth_tokens import AuthTokens
+from models.app_users import AppUsers
 
 
 def validate_uuid4(uuid_string):
@@ -39,9 +39,7 @@ def fail_response():
 def auth(function):
     @functools.wraps(function)
     def wrapper_auth_return(*args, **kwargs):
-
         auth_info = validate_token(request)
-        # auth_info = validate_token(args[0])
 
         if auth_info:
             return function(*args, **kwargs)
@@ -51,17 +49,22 @@ def auth(function):
     return wrapper_auth_return
 
 
-# def has_admin_permissions(function):
-#     @functools.wraps(function)
-#     def wrapper_has_admin_permissions_return(*args, **kwargs):
-#         print("ARGS", args)
-#         print("KWARGS", kwargs)
-#         user_id =
-#         user_role =
+def has_admin_permissions(function):
+    @functools.wraps(function)
+    def wrapper_has_admin_permissions_return(*args, **kwargs):
+        auth_info = validate_token(request)
 
-#         if user_role == "admin" or user_role == "super-admin":
-#             return function(*args, **kwargs)
-#         else:
-#         return jsonify({"message": "forbidden: admin permissions required"}), 403
+        if auth_info:
+            user_id = auth_info.user_id
 
-#     return wrapper_has_admin_permissions_return
+            user_query = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
+            if user_query:
+                user_role = user_query.role
+                if user_role == "admin":
+                    return function(*args, **kwargs)
+                else:
+                    return jsonify({"message": "forbidden: admin permissions required"}), 403
+
+        return fail_response()
+
+    return wrapper_has_admin_permissions_return

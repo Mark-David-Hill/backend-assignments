@@ -3,7 +3,7 @@ from flask import jsonify
 from db import db
 from models.categories import Categories, categories_schema, category_schema
 from util.reflection import populate_object
-from lib.authenticate import auth
+from lib.authenticate import auth, has_admin_permissions
 
 
 @auth
@@ -61,8 +61,8 @@ def category_update(req, category_id):
     return jsonify({"message": "category updated", "result": category_schema.dump(category_query)}), 200
 
 
-# @has_admin_permissions
 @auth
+@has_admin_permissions
 def category_delete(request, category_id):
     category_query = db.session.query(Categories).filter(Categories.category_id == category_id).first()
 

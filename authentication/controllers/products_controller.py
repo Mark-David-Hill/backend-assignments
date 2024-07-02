@@ -5,7 +5,7 @@ from models.products import Products, products_schema, product_schema
 from models.categories import Categories
 from models.warranties import Warranties
 from util.reflection import populate_object
-from lib.authenticate import auth
+from lib.authenticate import auth, has_admin_permissions
 
 
 @auth
@@ -106,8 +106,8 @@ def product_update_by_id(req, product_id):
     return jsonify({"message": "product updated", "result": product_schema.dump(product_query)}), 200
 
 
-# @has_admin_permissions
 @auth
+@has_admin_permissions
 def product_delete(request, product_id):
     print("IN THE PRODUCT DELETE FUNCTION")
     product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
