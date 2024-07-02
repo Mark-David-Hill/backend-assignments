@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, request
 
 from db import db
 from models.companies import Companies, companies_schema, company_schema
@@ -62,7 +62,7 @@ def company_update(req, company_id):
 
 # @has_admin_permissions
 @auth
-def company_delete(company_id):
+def company_delete(request, company_id):
     company_query = db.session.query(Companies).filter(Companies.company_id == company_id).first()
 
     if not company_query:

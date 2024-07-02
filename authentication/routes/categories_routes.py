@@ -6,7 +6,7 @@ categories = Blueprint('categories', __name__)
 
 
 @categories.route('/category', methods=["POST"])
-def categories_add():
+def category_add():
     return controllers.categories_controller.category_add(request)
 
 
@@ -27,4 +27,4 @@ def category_update(category_id):
 
 @categories.route('/category/delete/<category_id>', methods=["DELETE"])
 def category_delete(category_id):
-    return controllers.categories_controller.category_delete(category_id)
+    return controllers.categories_controller.category_delete(request, category_id)

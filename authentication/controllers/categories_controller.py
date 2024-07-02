@@ -47,6 +47,9 @@ def category_update(req, category_id):
 
     category_query = db.session.query(Categories).filter(Categories.category_id == category_id).first()
 
+    if not category_query:
+        return jsonify({"message": f"category with id {category_id} does not exist."})
+
     populate_object(category_query, post_data)
 
     try:
@@ -60,7 +63,7 @@ def category_update(req, category_id):
 
 # @has_admin_permissions
 @auth
-def category_delete(category_id):
+def category_delete(request, category_id):
     category_query = db.session.query(Categories).filter(Categories.category_id == category_id).first()
 
     if not category_query:

@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, request
 
 from db import db
 from models.warranties import Warranties, warranties_schema, warranty_schema
@@ -60,7 +60,7 @@ def warranty_update(req, warranty_id):
 
 # @has_admin_permissions
 @auth
-def warranty_delete(warranty_id):
+def warranty_delete(request, warranty_id):
     warranty_query = db.session.query(Warranties).filter(Warranties.warranty_id == warranty_id).first()
 
     if not warranty_query:

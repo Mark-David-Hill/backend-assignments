@@ -27,4 +27,4 @@ def warranty_update(warranty_id):
 
 @warranties.route('/warranty/delete/<warranty_id>', methods=["DELETE"])
 def warranty_delete(warranty_id):
-    return controllers.warranties_controller.warranty_delete(warranty_id)
+    return controllers.warranties_controller.warranty_delete(request, warranty_id)

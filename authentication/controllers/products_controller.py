@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, request
 
 from db import db
 from models.products import Products, products_schema, product_schema
@@ -108,7 +108,8 @@ def product_update_by_id(req, product_id):
 
 # @has_admin_permissions
 @auth
-def product_delete(product_id):
+def product_delete(request, product_id):
+    print("IN THE PRODUCT DELETE FUNCTION")
     product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
 
     if not product_query:
