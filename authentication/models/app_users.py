@@ -31,7 +31,7 @@ class AppUsers(db.Model):
 
 class AppUsersSchema(ma.Schema):
     class Meta:
-        fields = ['user_id', 'first_name', 'last_name' 'email', "role"]
+        fields = ['user_id', 'first_name', 'last_name', 'email', "role"]
 
 
 app_user_schema = AppUsersSchema()
