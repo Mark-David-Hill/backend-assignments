@@ -23,6 +23,7 @@ def category_add(req):
     return jsonify({"message": "category created", "result": category_schema.dump(new_category)}), 201
 
 
+@auth
 def categories_get_all():
     categories_query = db.session.query(Categories).all()
 
@@ -32,6 +33,7 @@ def categories_get_all():
     return jsonify({"message": "categories found", "results": categories_schema.dump(categories_query)}), 200
 
 
+@auth
 def category_get_by_id(category_id):
     category_query = db.session.query(Categories).filter(Categories.category_id == category_id).first()
 
@@ -61,7 +63,6 @@ def category_update(req, category_id):
     return jsonify({"message": "category updated", "result": category_schema.dump(category_query)}), 200
 
 
-@auth
 @has_admin_permissions
 def category_delete(request, category_id):
     category_query = db.session.query(Categories).filter(Categories.category_id == category_id).first()

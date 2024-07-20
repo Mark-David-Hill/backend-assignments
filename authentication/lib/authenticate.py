@@ -38,7 +38,7 @@ def fail_response():
 
 def auth(function):
     @functools.wraps(function)
-    def wrapper_auth_return(*args, **kwargs):
+    def function_wrapper(*args, **kwargs):
         auth_info = validate_token(request)
 
         if auth_info:
@@ -46,12 +46,12 @@ def auth(function):
         else:
             return fail_response()
 
-    return wrapper_auth_return
+    return function_wrapper
 
 
 def has_admin_permissions(function):
     @functools.wraps(function)
-    def wrapper_has_admin_permissions_return(*args, **kwargs):
+    def function_wrapper(*args, **kwargs):
         auth_info = validate_token(request)
 
         if auth_info:
@@ -67,4 +67,4 @@ def has_admin_permissions(function):
 
         return fail_response()
 
-    return wrapper_has_admin_permissions_return
+    return function_wrapper

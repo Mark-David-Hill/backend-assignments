@@ -4,8 +4,10 @@ from flask_bcrypt import generate_password_hash
 from db import db
 from models.app_users import AppUsers, app_user_schema, app_users_schema
 from util.reflection import populate_object
+from lib.authenticate import auth, has_admin_permissions
 
 
+@auth
 def user_add(req):
     post_data = req.form if req.form else req.json
 
@@ -26,6 +28,7 @@ def user_add(req):
     return jsonify({"message": "user created", "result": app_user_schema.dump(new_user)}), 201
 
 
+@auth
 def users_get_all():
     users_query = db.session.query(AppUsers).all()
 
@@ -35,6 +38,7 @@ def users_get_all():
     return jsonify({"message": "users found", "results": app_users_schema.dump(users_query)}), 200
 
 
+@auth
 def user_get_by_id(user_id):
     user_query = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
 
@@ -44,6 +48,7 @@ def user_get_by_id(user_id):
     return jsonify({"message": "user found", "result": app_user_schema.dump(user_query)}), 200
 
 
+@auth
 def user_update(req, user_id):
     post_data = req.form if req.form else req.json
 
@@ -60,6 +65,7 @@ def user_update(req, user_id):
     return jsonify({"message": "user updated", "result": app_user_schema.dump(user_query)}), 200
 
 
+@has_admin_permissions
 def user_delete(user_id):
     user_query = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
 

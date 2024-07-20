@@ -42,12 +42,9 @@ def auth_token_add(req):
         return jsonify({"message": "authorization successful", "result": auth_token_schema.dump(new_token)}), 201
 
 
-@auth
 def logout(req):
     post_data = req.form if req.form else req.json
-    print("POST DATA:", post_data)
     user_id = post_data.get('user_id')
-    print("USER ID", user_id)
 
     if not user_id:
         return jsonify({"message": "user_id is a required field"})
@@ -65,4 +62,4 @@ def logout(req):
             db.session.rollback()
             return jsonify({"message": f"unable to logout user with id {user_id}"}), 400
     else:
-        return jsonify({"message": f"user with id {user_id} could not be logged out because they are not authenticated"})
+        return jsonify({"message": f"user with id {user_id} has been logged out"})

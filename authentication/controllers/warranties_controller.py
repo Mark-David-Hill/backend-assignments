@@ -23,6 +23,7 @@ def warranty_add(req):
     return jsonify({"message": "warranty created", "result": warranty_schema.dump(new_warranty)}), 201
 
 
+@auth
 def warranties_get_all():
     warranties_query = db.session.query(Warranties).all()
 
@@ -32,6 +33,7 @@ def warranties_get_all():
     return jsonify({"message": "warranties found", "results": warranties_schema.dump(warranties_query)}), 200
 
 
+@auth
 def warranty_get_by_id(warranty_id):
     warranty_query = db.session.query(Warranties).filter(Warranties.warranty_id == warranty_id).first()
 
@@ -58,7 +60,6 @@ def warranty_update(req, warranty_id):
     return jsonify({"message": "warranty updated", "result": warranty_schema.dump(warranty_query)}), 200
 
 
-@auth
 @has_admin_permissions
 def warranty_delete(request, warranty_id):
     warranty_query = db.session.query(Warranties).filter(Warranties.warranty_id == warranty_id).first()

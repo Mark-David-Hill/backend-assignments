@@ -6,7 +6,6 @@ from util.reflection import populate_object
 from lib.authenticate import auth, has_admin_permissions
 
 
-@auth
 @has_admin_permissions
 def company_add(req):
     post_data = req.form if req.form else req.json
@@ -24,6 +23,7 @@ def company_add(req):
     return jsonify({"message": "company created", "result": company_schema.dump(new_company)}), 201
 
 
+@auth
 def companies_get_all():
     companies_query = db.session.query(Companies).all()
 
@@ -33,6 +33,7 @@ def companies_get_all():
     return jsonify({"message": "companies found", "results": companies_schema.dump(companies_query)}), 200
 
 
+@auth
 def company_get_by_id(company_id):
     company_query = db.session.query(Companies).filter(Companies.company_id == company_id).first()
 
@@ -42,7 +43,6 @@ def company_get_by_id(company_id):
     return jsonify({"message": "company found", "result": company_schema.dump(company_query)}), 200
 
 
-@auth
 @has_admin_permissions
 def company_update(req, company_id):
     post_data = req.form if req.form else req.json
@@ -60,7 +60,6 @@ def company_update(req, company_id):
     return jsonify({"message": "company updated", "result": company_schema.dump(company_query)}), 200
 
 
-@auth
 @has_admin_permissions
 def company_delete(request, company_id):
     company_query = db.session.query(Companies).filter(Companies.company_id == company_id).first()

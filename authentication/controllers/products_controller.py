@@ -53,6 +53,7 @@ def product_category_update(request):
     return jsonify({"message": "product added to category", "result": product_schema.dump(product_query)}), 200
 
 
+@auth
 def products_get_all():
     products_query = db.session.query(Products).all()
 
@@ -62,6 +63,7 @@ def products_get_all():
     return jsonify({"message": "products found", "results": products_schema.dump(products_query)}), 200
 
 
+@auth
 def products_get_active():
     products_query = db.session.query(Products).filter(Products.active == True).all()
 
@@ -71,6 +73,7 @@ def products_get_active():
     return jsonify({"message": "products found", "results": products_schema.dump(products_query)}), 200
 
 
+@auth
 def products_get_by_company_id(company_id):
     products_query = db.session.query(Products).filter(Products.company_id == company_id).all()
 
@@ -80,6 +83,7 @@ def products_get_by_company_id(company_id):
     return jsonify({"message": "products found", "results": products_schema.dump(products_query)}), 200
 
 
+@auth
 def product_get_by_id(product_id):
     product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
 
@@ -106,10 +110,8 @@ def product_update_by_id(req, product_id):
     return jsonify({"message": "product updated", "result": product_schema.dump(product_query)}), 200
 
 
-@auth
 @has_admin_permissions
 def product_delete(request, product_id):
-    print("IN THE PRODUCT DELETE FUNCTION")
     product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
 
     if not product_query:
