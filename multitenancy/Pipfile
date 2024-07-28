@@ -5,15 +5,13 @@ name = "pypi"
 
 [packages]
 flask = "*"
-psycopg2 = "*"
-sqlalchemy = "*"
 flask-sqlalchemy = "*"
-flask-marshmallow = "*"
+sqlalchemy = "*"
+psycopg2 = "*"
 marshmallow = "*"
-flask-cors = "*"
-marshmallow-sqlalchemy = "*"
+flask-bcrypt = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"
