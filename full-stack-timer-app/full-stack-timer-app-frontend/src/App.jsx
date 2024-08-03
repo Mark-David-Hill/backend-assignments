@@ -7,8 +7,10 @@ function App() {
 
   return (
     <div className="app-container">
-      <TimersList isAddingTimer={isAddingTimer} />
-      <AddTimerButton setIsAddingTimer={setIsAddingTimer} />
+      <div className="timers-container">
+        <TimersList isAddingTimer={isAddingTimer} />
+        <AddTimerButton setIsAddingTimer={setIsAddingTimer} />
+      </div>
     </div>
   );
 }

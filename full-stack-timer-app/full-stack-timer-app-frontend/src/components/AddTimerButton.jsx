@@ -24,7 +24,7 @@ const AddTimerButton = ({ setIsAddingTimer }) => {
   };
 
   return (
-    <div>
+    <div className="add-timer">
       <input
         type="text"
         placeholder="Timer Name"

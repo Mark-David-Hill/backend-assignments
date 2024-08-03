@@ -30,8 +30,8 @@ const Timer = ({ timerData }) => {
   }, [isStop]);
 
   return (
-    <div>
-      <div className="timer_wrapper">{timerName}</div>
+    <div className="timer-wrapper">
+      <div className="name-wrapper">{timerName}</div>
       <Display startTime={startTime} stopTime={stopTime} timerId={timerId} />
       <StartStopButton
         isStop={isStop}
