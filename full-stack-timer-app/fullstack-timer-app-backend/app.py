@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask, jsonify
+from flask_cors import CORS
 import psycopg2
 
 from db import *
@@ -15,6 +16,8 @@ database_uri = os.environ.get("DATABASE_URI")
 
 
 app = Flask(__name__)
+
+CORS(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

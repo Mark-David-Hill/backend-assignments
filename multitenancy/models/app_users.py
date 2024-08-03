@@ -18,7 +18,7 @@ class AppUsers(db.Model):
   org_id = db.Column(UUID(as_uuid=True), db.ForeignKey('Organizations.org_id'), nullable=False)
 
   org = db.relationship('Organizations', back_populates='users')
-  auth = db.relationship('AuthTokens', back_populates='users')
+  auth = db.relationship('AuthTokens', back_populates='user')
 
   def __init__(self, first_name, last_name, email, password, org_id, phone=None, active=True, role="user"):
     self.first_name = first_name

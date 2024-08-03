@@ -29,7 +29,7 @@ class OrganizationsSchema(ma.Schema):
   class Meta:
     fields = ['org_id', 'name', 'email', 'phone', 'active', 'users']
 
-  users = ma.fields.Nested('AppUsers', many=True, exclude=['org'])
+  users = ma.fields.Nested('AppUsersSchema', many=True, exclude=['org'])
 
 
 org_schema = OrganizationsSchema()

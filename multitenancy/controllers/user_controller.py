@@ -30,17 +30,17 @@ def add_user(request):
 
 
 @authenticate_return_auth
-def get_user_by_id(user_id, auth_info):
+def get_user_by_id(request, user_id, auth_info):
   user_query = db.session.query(AppUsers).filter(AppUsers.user_id == user_id).first()
 
-  if user_id == auth_info.user.user_id or auth_info.user.role == 'super-admin':
-    return jsonify({"message": "user found", "results": users_schema.dmp(user_query)}), 200
+  if user_id == str(auth_info.user.user_id) or auth_info.user.role == 'super-admin':
+    return jsonify({"message": "user found", "results": user_schema.dump(user_query)}), 200
   
   else:
     return jsonify({"message": "unauthorized"}), 403
   
 @authenticate_return_auth
-def get_all_users(auth_info):
+def get_all_users(request, auth_info):
   users_query = db.session.query(AppUsers).all()
 
   if auth_info.user.role == 'super-admin':

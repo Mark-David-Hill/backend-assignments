@@ -11,7 +11,7 @@ class AuthTokens(db.Model):
   user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('AppUsers.user_id'), nullable=False)
   expiration = db.Column(db.DateTime(), nullable=False)
   
-  users = db.relationship('AppUsers', back_populates='auth')
+  user = db.relationship('AppUsers', back_populates='auth')
 
   def __init__(self, user_id, expiration):
     self.user_id = user_id

@@ -1,0 +1,18 @@
+html {
+  height: 100%;
+
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+
+    #root {
+      height: 100dvh;
+
+      .app-container {
+        height: 100%;
+        background-color: rgb(202, 229, 255);
+      }
+    }
+  }
+}
