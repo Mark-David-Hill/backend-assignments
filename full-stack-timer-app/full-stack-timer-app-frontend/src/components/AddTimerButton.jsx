@@ -1,7 +1,7 @@
 import { useState } from "react";
 import fetchWrapper from "../lib/apiCall";
 
-const AddTimerButton = ({ setIsAddingTimer }) => {
+const AddTimerButton = ({ setIsUpdatingTimer }) => {
   const [timerName, setTimerName] = useState("");
 
   const handleSetTimerName = (event) => {
@@ -9,7 +9,7 @@ const AddTimerButton = ({ setIsAddingTimer }) => {
   };
 
   const handleAddTimer = () => {
-    setIsAddingTimer(true);
+    setIsUpdatingTimer(true);
 
     const body = {
       name: timerName,
@@ -18,7 +18,7 @@ const AddTimerButton = ({ setIsAddingTimer }) => {
     if (timerName) {
       fetchWrapper
         .apiCall(`/timer`, "POST", body)
-        .then(() => setIsAddingTimer(false))
+        .then(() => setIsUpdatingTimer(false))
         .catch((error) => console.error("couldn't create timer", error));
     }
   };

@@ -1,9 +1,10 @@
+import StartStopButton from "./StartStopButton";
 import { useEffect, useState } from "react";
 import fetchWrapper from "../lib/apiCall";
-import StartStopButton from "./StartStopButton";
+import DeleteButton from "./DeleteButton";
 import Display from "./Display";
 
-const Timer = ({ timerData }) => {
+const Timer = ({ timerData, setIsUpdatingTimer }) => {
   const [timerName, setTimerName] = useState(timerData.name);
   const [startTime, setStartTime] = useState(timerData.start_time);
   const [stopTime, setStopTime] = useState(timerData.stop_time);
@@ -31,6 +32,7 @@ const Timer = ({ timerData }) => {
 
   return (
     <div className="timer-wrapper">
+      <DeleteButton timerId={timerId} setIsUpdatingTimer={setIsUpdatingTimer} />
       <div className="name-wrapper">{timerName}</div>
       <Display startTime={startTime} stopTime={stopTime} timerId={timerId} />
       <StartStopButton

@@ -3,13 +3,17 @@ import AddTimerButton from "./components/AddTimerButton";
 import TimersList from "./components/TimersList";
 
 function App() {
-  const [isAddingTimer, setIsAddingTimer] = useState(false);
+  const [isUpdatingTimer, setIsUpdatingTimer] = useState(false);
 
   return (
     <div className="app-container">
+      <h1>Timers App</h1>
       <div className="timers-container">
-        <TimersList isAddingTimer={isAddingTimer} />
-        <AddTimerButton setIsAddingTimer={setIsAddingTimer} />
+        <TimersList
+          isUpdatingTimer={isUpdatingTimer}
+          setIsUpdatingTimer={setIsUpdatingTimer}
+        />
+        <AddTimerButton setIsUpdatingTimer={setIsUpdatingTimer} />
       </div>
     </div>
   );
