@@ -12,6 +12,7 @@ marshmallow = "*"
 flask-cors = "*"
 marshmallow-sqlalchemy = "*"
 psycopg2-binary = "*"
+flask-bcrypt = "*"
 
 [dev-packages]
 

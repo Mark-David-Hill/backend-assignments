@@ -5,10 +5,10 @@ from flask import jsonify, request as req
 from db import db
 from models.timers import Timers, timers_schema, timer_schema
 from util.reflection import populate_object
-# from lib.authenticaate import auth
+from lib.authenticate import auth
 
 
-# @auth
+@auth
 def timer_add():
     post_data = req.form if req.form else req.json
 
@@ -27,7 +27,7 @@ def timer_add():
     return jsonify({"message": "success", "result": timer_schema.dump(new_record)}), 201
 
 
-# @auth
+@auth
 def timer_update_by_id(timer_id):
     post_data = req.form if req.form else req.json
 
@@ -45,7 +45,7 @@ def timer_update_by_id(timer_id):
     return jsonify({"message": "success", "result": timer_schema.dump(timer_record)}), 200
 
 
-# @auth
+@auth
 def timers_get_all():
     timer_records = db.session.query(Timers).all()
 
@@ -56,7 +56,7 @@ def timers_get_all():
     
     
 
-# @auth
+@auth
 def timer_get_by_id(timer_id):
     timer_record = db.session.query(Timers).filter(Timers.timer_id == timer_id).first()
 
@@ -66,7 +66,7 @@ def timer_get_by_id(timer_id):
         return jsonify({"message": "timer not found"}), 404
     
 
-# @auth
+@auth
 def timer_start(timer_id):
     timer_record = db.session.query(Timers).filter(Timers.timer_id == timer_id).first()
 
@@ -88,7 +88,7 @@ def timer_start(timer_id):
     return jsonify({"message": "success", "result": timer_schema.dump(timer_record)}), 200
 
 
-# @auth
+@auth
 def timer_stop(timer_id):
     timer_record = db.session.query(Timers).filter(Timers.timer_id == timer_id).first()
 
@@ -106,17 +106,17 @@ def timer_stop(timer_id):
     return jsonify({"message": "success", "result": timer_schema.dump(timer_record)}), 200
 
 
-# @auth
-# def timer_delete(timer_id):
-#     timer_record = db.session.query(Timers).filter(Timers.timer_id == timer_id).first()
+@auth
+def timer_delete(timer_id):
+    timer_record = db.session.query(Timers).filter(Timers.timer_id == timer_id).first()
 
 
-#     try:
-#         db.session.delete(timer_record)
-#         db.session.commit()
-#     except:
-#         db.session.rollback()
+    try:
+        db.session.delete(timer_record)
+        db.session.commit()
+    except:
+        db.session.rollback()
 
-#         return jsonify({"message": "could not delete timer"}), 400
+        return jsonify({"message": "could not delete timer"}), 400
 
-#     return jsonify({"message": "success, timer was deleted"}), 200
+    return jsonify({"message": "success, timer was deleted"}), 200

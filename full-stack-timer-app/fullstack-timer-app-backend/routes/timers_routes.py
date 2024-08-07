@@ -34,6 +34,6 @@ def timer_stop(timer_id):
     return controllers.timer_stop(timer_id)
 
 
-# @timers.route("/timer/delete/<timer_id>", methods=["DELETE"])
-# def timer_delete(timer_id):
-#     return controllers.timer_delete(timer_id)
+@timers.route("/timer/delete/<timer_id>", methods=["DELETE"])
+def timer_delete(timer_id):
+    return controllers.timer_delete(timer_id)
