@@ -10,6 +10,9 @@ from lib.authenticate import auth
 def user_add(req):
     post_data = req.form if req.form else req.json
 
+    if not post_data:
+        return jsonify({"message": "email and password are required fields"}), 400
+
     new_user = AppUsers.new_user_obj()
 
     populate_object(new_user, post_data)

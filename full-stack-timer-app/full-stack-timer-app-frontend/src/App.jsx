@@ -5,17 +5,25 @@ import LoginForm from "./components/LoginForm";
 
 function App() {
   const [isUpdatingTimer, setIsUpdatingTimer] = useState(false);
+  const [authToken, setAuthToken] = useState(null);
 
   return (
     <div className="app-container">
       <h1>Timers App</h1>
       <div className="timers-container">
-        <LoginForm />
+        <LoginForm
+          setAuthToken={setAuthToken}
+          setIsUpdatingTimer={setIsUpdatingTimer}
+        />
         <TimersList
           isUpdatingTimer={isUpdatingTimer}
           setIsUpdatingTimer={setIsUpdatingTimer}
+          authToken={authToken}
         />
-        <AddTimerButton setIsUpdatingTimer={setIsUpdatingTimer} />
+        <AddTimerButton
+          setIsUpdatingTimer={setIsUpdatingTimer}
+          authToken={authToken}
+        />
       </div>
     </div>
   );

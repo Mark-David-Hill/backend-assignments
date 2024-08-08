@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import fetchWrapper from "../lib/apiCall";
 import Timer from "./Timer";
 
-const TimersList = ({ isUpdatingTimer, setIsUpdatingTimer }) => {
+const TimersList = ({ isUpdatingTimer, setIsUpdatingTimer, authToken }) => {
   const [allTimers, setAllTimers] = useState(null);
 
   useEffect(() => {
     try {
-      fetchWrapper.apiCall("/timers", "GET").then((data) => {
+      fetchWrapper.apiCall("/timers", "GET", null, authToken).then((data) => {
         console.log(data);
         if (data.results.length > 0) {
           setAllTimers(data.results);
@@ -30,6 +30,7 @@ const TimersList = ({ isUpdatingTimer, setIsUpdatingTimer }) => {
                 key={timerId}
                 timerData={timerData}
                 setIsUpdatingTimer={setIsUpdatingTimer}
+                authToken={authToken}
               />
             );
           })}

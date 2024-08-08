@@ -1,4 +1,4 @@
-const apiCall = (endpoint, method, body = null) =>
+const apiCall = (endpoint, method, body = null, authToken = null) =>
   new Promise((resolve, reject) => {
     const payload = {};
 
@@ -6,7 +6,7 @@ const apiCall = (endpoint, method, body = null) =>
       payload.body = JSON.stringify(body);
     }
     payload.method = method;
-    payload.headers = { "Content-Type": "application/json" };
+    payload.headers = { "Content-Type": "application/json", auth: authToken };
 
     fetch(`http://localhost:8086${endpoint}`, payload)
       .then((res) => {

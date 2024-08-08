@@ -1,7 +1,7 @@
 import { useState } from "react";
 import fetchWrapper from "../lib/apiCall";
 
-const LoginForm = ({ setIsUpdatingTimer }) => {
+const LoginForm = ({ setAuthToken, setIsUpdatingTimer }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -21,12 +21,15 @@ const LoginForm = ({ setIsUpdatingTimer }) => {
       password: password,
     };
 
-    // if (email && password) {
-    //   fetchWrapper
-    //     .apiCall(`/timer`, "POST", body)
-    //     .then(() => setIsUpdatingTimer(false))
-    //     .catch((error) => console.error("couldn't login", error));
-    // }
+    if (email && password) {
+      fetchWrapper
+        .apiCall(`/user/auth`, "POST", body)
+        .then((data) => {
+          setAuthToken(data.result.auth_token);
+          setIsUpdatingTimer(false);
+        })
+        .catch((error) => console.error("couldn't login", error));
+    }
   };
 
   return (
